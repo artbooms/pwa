@@ -1,0 +1,41 @@
+
+ARTBOOMS – PWA PACK (manifest + service worker + icons)
+======================================================
+
+Two free options:
+
+OPTION A — Cloudflare (recommended for Android auto-install banner)
+------------------------------------------------------------------
+Squarespace cannot host /sw.js at your domain root; Android requires it.
+Cloudflare Free can serve /manifest.json and /sw.js at https://www.artbooms.com/*.
+
+Steps:
+1) Create a free Cloudflare account and add artbooms.com. Switch nameservers (one-time).
+2) Workers & Pages → Create Worker → paste `cloudflare_worker.js` → Deploy.
+3) Add routes to the worker:
+   - artbooms.com/manifest.json
+   - artbooms.com/sw.js
+   - artbooms.com/icons/*
+4) In Squarespace → Settings → Advanced → Code Injection → HEADER
+   Paste `HEADER_SNIPPET.html` (it references /manifest.json and /sw.js at the root).
+5) Visit https://www.artbooms.com/ on Android Chrome → you should see the Install prompt.
+
+OPTION B — Squarespace-only (no Cloudflare, install via menu)
+-------------------------------------------------------------
+Upload files (manifest.json, sw.js, icons/*.png) to Squarespace (File block or library).
+Copy their full public URLs and use them in a custom HEADER snippet like:
+
+<link rel="manifest" href="FULL_MANIFEST_URL">
+<meta name="theme-color" content="#FFFFFF">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('FULL_SW_JS_URL').catch(function(e){console.log('SW reg failed', e);});
+  });
+}
+</script>
+
+iPhone: Share → Add to Home Screen (banner-like).
+Android: Chrome menu → Install app (auto banner may not show without root SW).
+
+Safety: the SW here does NOT cache; it only enables installability. Remove the header to disable.
