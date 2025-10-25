@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#cc0000">
+  <title>ARTBOOMS – Notizie di Arte Contemporanea</title>
+
+  <!-- SEO -->
+  <meta name="description" content="ARTBOOMS: magazine online d'arte contemporanea. Notizie, mostre, artisti e approfondimenti.">
+  <link rel="canonical" href="https://www.artbooms.com/">
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(e => console.log('SW failed', e));
+    }
+  </script>
+
+  <!-- Open Graph (Facebook / WhatsApp / LinkedIn) -->
+  <meta property="og:title" content="ARTBOOMS – Notizie di Arte Contemporanea">
+  <meta property="og:description" content="ARTBOOMS è il magazine online dedicato all’arte contemporanea: notizie, mostre e artisti.">
+  <meta property="og:image" content="https://www.artbooms.com/images/artbooms-cover.jpg">
+  <meta property="og:url" content="https://www.artbooms.com/">
+  <meta property="og:type" content="website">
+
+  <!-- Icone -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/icon-512.png">
+</head>
+
+<body>
+  <main style="font-family: system-ui, sans-serif; text-align: center; margin-top: 10vh;">
+    <h1 style="letter-spacing: 2px;">ARTBOOMS</h1>
+    <p>Magazine online d'arte contemporanea.<br>Notizie, mostre, artisti e approfondimenti.</p>
+    <p><a href="https://www.artbooms.com" target="_blank" rel="noopener">Visita il sito principale</a></p>
+  </main>
+</body>
+</html>
