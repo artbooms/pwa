@@ -13,6 +13,9 @@
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
   <link rel="alternate" type="text/plain" href="/robots.txt">
+
+  <!-- Apple & mobile web app -->
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
@@ -100,7 +103,7 @@
     <img id="logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS logo">
     <p>Magazine online d'arte contemporanea.<br>Notizie, mostre, artisti e approfondimenti.</p>
     <button id="installBtn" onclick="installApp()">Installa l'app</button>
-    <p id="androidHint">Tocca per installare l’app di ARTBOOMS sul tuo telefono.</p>
+    <p id="androidHint">Tocca per installare l’app di ARTBOOMS sul tuo telefono.<br>Su iPhone, usa il pulsante Condividi → “Aggiungi alla schermata Home”.</p>
   </main>
 
   <script>
@@ -108,8 +111,8 @@
       document.body.classList.add('loaded');
     });
 
-    // mostra le istruzioni solo su Android
-    if (/android/i.test(navigator.userAgent)) {
+    // mostra le istruzioni solo su Android o iOS
+    if (/android/i.test(navigator.userAgent) || /iphone|ipad|ipod/i.test(navigator.userAgent)) {
       document.getElementById('androidHint').style.display = 'block';
     }
   </script>
