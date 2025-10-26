@@ -4,117 +4,108 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#000000">
-  <title>Installa ARTBOOMS</title>
+  <title>ARTBOOMS</title>
 
-  <!-- SEO -->
-  <meta name="description" content="Installa ARTBOOMS, il magazine online d'arte contemporanea: notizie, mostre, artisti e approfondimenti.">
+  <meta name="description" content="ARTBOOMS – magazine online d'arte contemporanea: notizie, mostre, artisti e approfondimenti.">
   <link rel="canonical" href="https://www.artbooms.com/">
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
-  <link rel="alternate" type="text/plain" href="/robots.txt">
-
-  <!-- Apple & mobile web app -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-  <script>
-    // registra il service worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(console.error);
-      });
-    }
-
-    // bottone installa app per Android
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      document.getElementById('installBtn').style.display = 'inline-block';
-    });
-
-    function installApp() {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(() => deferredPrompt = null);
-      } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-        alert("Su iPhone: tocca il pulsante Condividi ➀ e poi 'Aggiungi alla schermata Home' ➁.");
-      } else {
-        window.open('https://www.artbooms.com', '_blank');
-      }
-    }
-  </script>
-
-  <!-- Icone -->
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/icon-512.png">
 
-  <!-- Stili ed effetto dissolvenza -->
   <style>
     body {
-      font-family: system-ui, sans-serif;
-      text-align: center;
-      background: #fff;
-      color: #000;
-      margin: 0;
-      opacity: 0;
-      transition: opacity 1.2s ease-in;
+      display:flex; align-items:center; justify-content:center;
+      height:100vh; margin:0; background:#fff;
+      opacity:0; transition:opacity 1s ease-in;
+      font-family:system-ui, sans-serif;
     }
-    body.loaded {
-      opacity: 1;
-    }
+    body.loaded { opacity:1; }
     #logo {
-      max-width: 90%;
-      height: auto;
-      margin-bottom: 20px;
-      animation: fadeIn 1.5s ease-in;
-    }
-    #installBtn {
-      display: none;
-      background: #000;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 22px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    #installBtn:hover {
-      background: #333;
-    }
-    #androidHint {
-      display: none;
-      font-size: 0.9rem;
-      color: #555;
-      margin-top: 15px;
+      max-width:75%;
+      height:auto;
+      animation:fadeIn 1.3s ease-in;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity:0; transform:scale(0.97); }
+      to { opacity:1; transform:scale(1); }
+    }
+
+    /* Banner per iPhone */
+    #iosGuide {
+      display:none;
+      position:fixed;
+      top:50%; left:50%;
+      transform:translate(-50%, -50%);
+      background:rgba(0,0,0,0.88);
+      color:#fff;
+      padding:22px 28px;
+      border-radius:20px;
+      text-align:center;
+      max-width:320px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.4);
+      animation:fadeIn 0.6s ease-in;
+      z-index:9999;
+    }
+    #iosGuide img {
+      width:28px; height:auto; vertical-align:middle;
+      margin:0 4px;
+    }
+    #iosGuide h2 {
+      font-size:1rem;
+      margin:0 0 10px;
+      letter-spacing:0.5px;
+    }
+    #iosGuide p {
+      font-size:0.9rem;
+      margin:0;
+      line-height:1.4;
     }
   </style>
 </head>
 
 <body>
-  <main style="padding: 10vh 5vw;">
-    <img id="logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS logo">
-    <p>Magazine online d'arte contemporanea.<br>Notizie, mostre, artisti e approfondimenti.</p>
-    <button id="installBtn" onclick="installApp()">Installa l'app</button>
-    <p id="androidHint">Tocca per installare l’app di ARTBOOMS sul tuo telefono.<br>Su iPhone, usa il pulsante Condividi → “Aggiungi alla schermata Home”.</p>
-  </main>
+  <img id="logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS logo">
+
+  <!-- Finestra guida iPhone -->
+  <div id="iosGuide">
+    <h2>Installa ARTBOOMS</h2>
+    <p>
+      Tocca <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Share_icon_iOS.svg/1024px-Share_icon_iOS.svg.png" alt="icona condividi">
+      in basso<br>
+      e scegli “Aggiungi alla schermata Home”.
+    </p>
+  </div>
 
   <script>
+    // registra il service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(console.error);
+    }
+
     window.addEventListener('load', () => {
       document.body.classList.add('loaded');
-    });
 
-    // mostra le istruzioni solo su Android o iOS
-    if (/android/i.test(navigator.userAgent) || /iphone|ipad|ipod/i.test(navigator.userAgent)) {
-      document.getElementById('androidHint').style.display = 'block';
-    }
+      // Android → mostra direttamente il prompt d'installazione
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        e.prompt();
+      });
+
+      // iPhone → mostra guida visiva
+      if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+        const g = document.getElementById('iosGuide');
+        g.style.display = 'block';
+        // chiudi automaticamente dopo 8 secondi o se clicca fuori
+        setTimeout(() => g.style.display = 'none', 8000);
+        document.body.addEventListener('click', () => g.style.display = 'none');
+      }
+    });
   </script>
 </body>
 </html>
