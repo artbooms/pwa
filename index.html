@@ -4,42 +4,59 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#cc0000">
-  <title>ARTBOOMS – Notizie di Arte Contemporanea</title>
+  <title>Installa ARTBOOMS</title>
 
   <!-- SEO -->
-  <meta name="description" content="ARTBOOMS: magazine online d'arte contemporanea. Notizie, mostre, artisti e approfondimenti.">
+  <meta name="description" content="Installa ARTBOOMS, il magazine online d'arte contemporanea: notizie, mostre, artisti e approfondimenti.">
   <link rel="canonical" href="https://www.artbooms.com/">
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
   <link rel="alternate" type="text/plain" href="/robots.txt">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <script>
+    // registra il service worker
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js')
-          .then(() => console.log('Service worker registrato'))
-          .catch(e => console.log('SW failed', e));
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(console.error);
       });
     }
-  </script>
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="ARTBOOMS – Notizie di Arte Contemporanea">
-  <meta property="og:description" content="ARTBOOMS è il magazine online dedicato all’arte contemporanea: notizie, mostre e artisti.">
-  <meta property="og:image" content="https://www.artbooms.com/images/artbooms-cover.jpg">
-  <meta property="og:url" content="https://www.artbooms.com/">
-  <meta property="og:type" content="website">
+    // bottone installa app per Android
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBtn').style.display = 'inline-block';
+    });
+
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => deferredPrompt = null);
+      } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+        alert("Su iPhone: tocca il pulsante Condividi ➀ e poi 'Aggiungi alla schermata Home' ➁.");
+      } else {
+        window.open('https://www.artbooms.com', '_blank');
+      }
+    }
+  </script>
 
   <!-- Icone -->
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/icon-512.png">
 </head>
 
-<body>
-  <main style="font-family: system-ui, sans-serif; text-align: center; margin-top: 10vh;">
-    <h1 style="letter-spacing: 2px;">ARTBOOMS</h1>
+<body style="font-family: system-ui, sans-serif; text-align: center; background: #fff; color: #222; margin: 0;">
+  <main style="padding: 10vh 5vw;">
+    <img src="/icons/icon-192.png" alt="ARTBOOMS logo" width="120" height="120" style="border-radius:20px;">
+    <h1 style="letter-spacing: 2px; color:#cc0000;">ARTBOOMS</h1>
     <p>Magazine online d'arte contemporanea.<br>Notizie, mostre, artisti e approfondimenti.</p>
-    <p><a href="https://www.artbooms.com" target="_blank" rel="noopener">Visita il sito principale</a></p>
+    <button id="installBtn" onclick="installApp()" style="display:none; background:#cc0000; color:#fff; border:none; border-radius:10px; padding:12px 20px; font-size:1rem; cursor:pointer;">
+      Installa l'app
+    </button>
+    <p style="margin-top:30px;"><a href="https://www.artbooms.com" target="_blank" rel="noopener">Visita il sito principale</a></p>
   </main>
 </body>
 </html>
