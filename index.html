@@ -82,6 +82,12 @@
     #installBtn:hover {
       background: #333;
     }
+    #androidHint {
+      display: none;
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 15px;
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -94,12 +100,18 @@
     <img id="logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS logo">
     <p>Magazine online d'arte contemporanea.<br>Notizie, mostre, artisti e approfondimenti.</p>
     <button id="installBtn" onclick="installApp()">Installa l'app</button>
+    <p id="androidHint">Tocca per installare l’app di ARTBOOMS sul tuo telefono.</p>
   </main>
 
   <script>
     window.addEventListener('load', () => {
       document.body.classList.add('loaded');
     });
+
+    // mostra le istruzioni solo su Android
+    if (/android/i.test(navigator.userAgent)) {
+      document.getElementById('androidHint').style.display = 'block';
+    }
   </script>
 </body>
 </html>
