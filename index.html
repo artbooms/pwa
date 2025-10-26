@@ -12,13 +12,18 @@
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
+  <link rel="alternate" type="text/plain" href="/robots.txt">
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(e => console.log('SW failed', e));
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+          .then(() => console.log('Service worker registrato'))
+          .catch(e => console.log('SW failed', e));
+      });
     }
   </script>
 
-  <!-- Open Graph (Facebook / WhatsApp / LinkedIn) -->
+  <!-- Open Graph -->
   <meta property="og:title" content="ARTBOOMS – Notizie di Arte Contemporanea">
   <meta property="og:description" content="ARTBOOMS è il magazine online dedicato all’arte contemporanea: notizie, mostre e artisti.">
   <meta property="og:image" content="https://www.artbooms.com/images/artbooms-cover.jpg">
