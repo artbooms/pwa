@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#cc0000">
+  <meta name="theme-color" content="#000000">
   <title>Installa ARTBOOMS</title>
 
   <!-- SEO -->
@@ -15,6 +15,7 @@
   <link rel="alternate" type="text/plain" href="/robots.txt">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <script>
     // registra il service worker
     if ('serviceWorker' in navigator) {
@@ -46,17 +47,65 @@
   <!-- Icone -->
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/icon-512.png">
+
+  <!-- Effetto dissolvenza -->
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      text-align: center;
+      background: #fff;
+      color: #000;
+      margin: 0;
+      opacity: 0;
+      transition: opacity 1.2s ease-in;
+    }
+    body.loaded {
+      opacity: 1;
+    }
+    #logo {
+      max-width: 90%;
+      height: auto;
+      margin-bottom: 20px;
+      animation: fadeIn 1.5s ease-in;
+    }
+    h1 {
+      letter-spacing: 2px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    #installBtn {
+      display: none;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 22px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #installBtn:hover {
+      background: #333;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 
-<body style="font-family: system-ui, sans-serif; text-align: center; background: #fff; color: #222; margin: 0;">
+<body>
   <main style="padding: 10vh 5vw;">
-    <img src="/icons/icon-192.png" alt="ARTBOOMS logo" width="120" height="120" style="border-radius:20px;">
-    <h1 style="letter-spacing: 2px; color:#cc0000;">ARTBOOMS</h1>
+    <img id="logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS logo">
+    <h1>ARTBOOMS</h1>
     <p>Magazine online d'arte contemporanea.<br>Notizie, mostre, artisti e approfondimenti.</p>
-    <button id="installBtn" onclick="installApp()" style="display:none; background:#cc0000; color:#fff; border:none; border-radius:10px; padding:12px 20px; font-size:1rem; cursor:pointer;">
-      Installa l'app
-    </button>
-    <p style="margin-top:30px;"><a href="https://www.artbooms.com" target="_blank" rel="noopener">Visita il sito principale</a></p>
+    <button id="installBtn" onclick="installApp()">Installa l'app</button>
   </main>
+
+  <script>
+    window.addEventListener('load', () => {
+      document.body.classList.add('loaded');
+    });
+  </script>
 </body>
 </html>
