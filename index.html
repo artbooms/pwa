@@ -6,7 +6,6 @@
   <meta name="theme-color" content="#000000">
   <title>Installa ARTBOOMS</title>
 
-  <!-- SEO -->
   <meta name="description" content="Installa ARTBOOMS, il magazine online d'arte contemporanea.">
   <link rel="canonical" href="https://www.artbooms.com/">
 
@@ -57,6 +56,7 @@
       z-index:1000;
       max-width:280px;
       line-height:1.4;
+      display:none;
     }
 
     .bubble b { font-weight:700; font-size:1rem; }
@@ -87,7 +87,6 @@
 
     /* Secondo fumetto (nero, opposto) */
     #bubble2 {
-      display:none;
       background:#111;
       color:#fff;
       bottom:150px;
@@ -134,17 +133,22 @@
     // Mostra i fumetti solo su dispositivi Apple
     window.addEventListener('load', () => {
       if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-        const b1 = document.getElementById('bubble1');
-        const b2 = document.getElementById('bubble2');
+        const bubble1 = document.getElementById('bubble1');
+        const bubble2 = document.getElementById('bubble2');
+        const safariIcon = document.getElementById('safariIcon');
 
-        b1.style.display = 'block'; // mostra primo messaggio
+        // Mostra il primo fumetto subito
+        bubble1.style.display = 'block';
 
-        document.getElementById('safariIcon').addEventListener('click', () => {
-          b1.style.display = 'none'; // nasconde il primo
-          b2.style.display = 'block'; // mostra il secondo
+        // Quando l'utente clicca l'icona Safari:
+        // 1️⃣ nascondi il primo fumetto
+        // 2️⃣ mostra il secondo
+        safariIcon.addEventListener('click', () => {
+          bubble1.style.display = 'none';
+          bubble2.style.display = 'block';
         });
       } else {
-        // Nasconde tutto su Android (dove la PWA si installa nativamente)
+        // Nasconde tutto su Android (la PWA si installa nativamente)
         document.getElementById('bubble1').style.display = 'none';
         document.getElementById('bubble2').style.display = 'none';
         document.getElementById('safariIcon').style.display = 'none';
