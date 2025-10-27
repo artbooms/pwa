@@ -6,7 +6,8 @@
   <meta name="theme-color" content="#000000">
   <title>Installa ARTBOOMS</title>
 
-  <meta name="description" content="Installa ARTBOOMS, il magazine online d'arte contemporanea: notizie, mostre, artisti e approfondimenti.">
+  <!-- SEO -->
+  <meta name="description" content="Installa ARTBOOMS, il magazine online d'arte contemporanea.">
   <link rel="canonical" href="https://www.artbooms.com/">
 
   <!-- PWA -->
@@ -28,8 +29,11 @@
       overflow:hidden;
     }
 
+    /* Logo del sito */
     #logo {
-      max-width:80%; height:auto; margin-bottom:10px;
+      max-width:85%;
+      height:auto;
+      margin-bottom:15px;
     }
 
     /* Link grigio chiaro sotto al logo */
@@ -78,7 +82,7 @@
       width:40px;
       height:40px;
       background:url('https://upload.wikimedia.org/wikipedia/commons/4/4e/Safari_browser_logo.svg') center/contain no-repeat;
-      opacity:0.8;
+      opacity:0.85;
     }
 
     /* Secondo fumetto (nero, opposto) */
@@ -102,7 +106,10 @@
 </head>
 
 <body>
+  <!-- Logo corretto dal repository GitHub -->
   <img id="logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS logo">
+
+  <!-- Link per tornare al sito -->
   <a id="backLink" href="https://www.artbooms.com/" target="_blank" rel="noopener">per tornare alla home clicca qui</a>
 
   <!-- Primo fumetto -->
@@ -124,22 +131,20 @@
       navigator.serviceWorker.register('/sw.js').catch(console.error);
     }
 
-    // Mostra i fumetti solo su iPhone/iPad
+    // Mostra i fumetti solo su dispositivi Apple
     window.addEventListener('load', () => {
       if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
         const b1 = document.getElementById('bubble1');
         const b2 = document.getElementById('bubble2');
 
-        // Mostra il primo fumetto
-        b1.style.display = 'block';
+        b1.style.display = 'block'; // mostra primo messaggio
 
-        // Quando l'utente clicca il simbolo Safari, cambia fumetto
         document.getElementById('safariIcon').addEventListener('click', () => {
-          b1.style.display = 'none';
-          b2.style.display = 'block';
+          b1.style.display = 'none'; // nasconde il primo
+          b2.style.display = 'block'; // mostra il secondo
         });
       } else {
-        // Nasconde i fumetti su Android
+        // Nasconde tutto su Android (dove la PWA si installa nativamente)
         document.getElementById('bubble1').style.display = 'none';
         document.getElementById('bubble2').style.display = 'none';
         document.getElementById('safariIcon').style.display = 'none';
