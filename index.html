@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#000000">
-  <title>ARTBOOMS</title>
+  <title>Installa ARTBOOMS</title>
 
-  <meta name="description" content="ARTBOOMS – magazine online d'arte contemporanea: notizie, mostre, artisti e approfondimenti.">
+  <meta name="description" content="Installa ARTBOOMS, il magazine online d'arte contemporanea: notizie, mostre, artisti e approfondimenti.">
   <link rel="canonical" href="https://www.artbooms.com/">
 
   <!-- PWA -->
@@ -15,95 +15,134 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
+  <!-- Icone -->
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/icon-512.png">
 
   <style>
     body {
-      display:flex; align-items:center; justify-content:center;
-      height:100vh; margin:0; background:#fff;
-      opacity:0; transition:opacity 1s ease-in;
-      font-family:system-ui, sans-serif;
-    }
-    body.loaded { opacity:1; }
-    #logo {
-      max-width:75%;
-      height:auto;
-      animation:fadeIn 1.3s ease-in;
-    }
-    @keyframes fadeIn {
-      from { opacity:0; transform:scale(0.97); }
-      to { opacity:1; transform:scale(1); }
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      min-height:100vh; margin:0; background:#fff;
+      font-family: "Times New Roman", "Imperial", serif;
+      color:#000; text-align:center;
+      overflow:hidden;
     }
 
-    /* Banner per iPhone */
-    #iosGuide {
-      display:none;
+    #logo {
+      max-width:80%; height:auto; margin-bottom:10px;
+    }
+
+    /* Link grigio chiaro sotto al logo */
+    #backLink {
+      font-size:0.85rem;
+      color:#999;
+      margin-bottom:30px;
+      text-decoration:none;
+    }
+
+    /* --- FUMETTI --- */
+    .bubble {
       position:fixed;
-      top:50%; left:50%;
-      transform:translate(-50%, -50%);
-      background:rgba(0,0,0,0.88);
-      color:#fff;
-      padding:22px 28px;
-      border-radius:20px;
-      text-align:center;
-      max-width:320px;
-      box-shadow:0 4px 20px rgba(0,0,0,0.4);
-      animation:fadeIn 0.6s ease-in;
-      z-index:9999;
-    }
-    #iosGuide img {
-      width:28px; height:auto; vertical-align:middle;
-      margin:0 4px;
-    }
-    #iosGuide h2 {
-      font-size:1rem;
-      margin:0 0 10px;
-      letter-spacing:0.5px;
-    }
-    #iosGuide p {
+      background:#e0f0ff;
+      color:#000;
+      font-family: "Times New Roman", "Imperial", serif;
       font-size:0.9rem;
-      margin:0;
+      padding:14px 20px;
+      border-radius:18px;
+      box-shadow:0 3px 15px rgba(0,0,0,0.25);
+      z-index:1000;
+      max-width:280px;
       line-height:1.4;
+    }
+
+    .bubble b { font-weight:700; font-size:1rem; }
+
+    /* Triangolino azzurro verso il basso */
+    .bubble::after {
+      content:"";
+      position:absolute;
+      bottom:-12px;
+      left:50%;
+      transform:translateX(-50%);
+      border-width:12px 10px 0 10px;
+      border-style:solid;
+      border-color:#e0f0ff transparent transparent transparent;
+    }
+
+    /* Icona Safari sotto il primo fumetto */
+    #safariIcon {
+      position:fixed;
+      bottom:20px;
+      left:50%;
+      transform:translateX(-50%);
+      width:40px;
+      height:40px;
+      background:url('https://upload.wikimedia.org/wikipedia/commons/4/4e/Safari_browser_logo.svg') center/contain no-repeat;
+      opacity:0.8;
+    }
+
+    /* Secondo fumetto (nero, opposto) */
+    #bubble2 {
+      display:none;
+      background:#111;
+      color:#fff;
+      bottom:150px;
+      right:20px;
+    }
+    #bubble2::after {
+      content:"";
+      position:absolute;
+      top:-12px;
+      right:25px;
+      border-width:0 10px 12px 10px;
+      border-style:solid;
+      border-color:transparent transparent #111 transparent;
     }
   </style>
 </head>
 
 <body>
   <img id="logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS logo">
+  <a id="backLink" href="https://www.artbooms.com/" target="_blank" rel="noopener">per tornare alla home clicca qui</a>
 
-  <!-- Finestra guida iPhone -->
-  <div id="iosGuide">
-    <h2>Installa ARTBOOMS</h2>
-    <p>
-      Tocca <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Share_icon_iOS.svg/1024px-Share_icon_iOS.svg.png" alt="icona condividi">
-      in basso<br>
-      e scegli “Aggiungi alla schermata Home”.
-    </p>
+  <!-- Primo fumetto -->
+  <div id="bubble1" class="bubble" style="bottom:80px; left:20px;">
+    <span>Per scaricare l’app<br><b>clicca qui</b></span>
+  </div>
+
+  <!-- Icona Safari -->
+  <div id="safariIcon"></div>
+
+  <!-- Secondo fumetto -->
+  <div id="bubble2" class="bubble">
+    <span>E adesso scegli:<br><b>Aggiungi alla schermata home</b></span>
   </div>
 
   <script>
-    // registra il service worker
+    // Registra il service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(console.error);
     }
 
+    // Mostra i fumetti solo su iPhone/iPad
     window.addEventListener('load', () => {
-      document.body.classList.add('loaded');
-
-      // Android → mostra direttamente il prompt d'installazione
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        e.prompt();
-      });
-
-      // iPhone → mostra guida visiva
       if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-        const g = document.getElementById('iosGuide');
-        g.style.display = 'block';
-        // chiudi automaticamente dopo 8 secondi o se clicca fuori
-        setTimeout(() => g.style.display = 'none', 8000);
-        document.body.addEventListener('click', () => g.style.display = 'none');
+        const b1 = document.getElementById('bubble1');
+        const b2 = document.getElementById('bubble2');
+
+        // Mostra il primo fumetto
+        b1.style.display = 'block';
+
+        // Quando l'utente clicca il simbolo Safari, cambia fumetto
+        document.getElementById('safariIcon').addEventListener('click', () => {
+          b1.style.display = 'none';
+          b2.style.display = 'block';
+        });
+      } else {
+        // Nasconde i fumetti su Android
+        document.getElementById('bubble1').style.display = 'none';
+        document.getElementById('bubble2').style.display = 'none';
+        document.getElementById('safariIcon').style.display = 'none';
       }
     });
   </script>
