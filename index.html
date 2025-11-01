@@ -34,7 +34,7 @@
       overflow:hidden;
     }
 
-    /* Logo del sito */
+    /* Logo */
     #logo {
       max-width:85%;
       height:auto;
@@ -51,60 +51,60 @@
 
     /* --- FUMETTI --- */
     .bubble {
-      position:fixed;
-      background:#e0f0ff;
-      color:#000;
-      font-family:"Times New Roman","Imperial",serif;
-      font-size:0.9rem;
-      padding:14px 20px;
-      border-radius:18px;
-      box-shadow:0 3px 15px rgba(0,0,0,0.25);
-      z-index:1000;
-      width:250px;                 /* dimensione fissa */
-      text-align:center;
-      line-height:1.4;
-      display:none;
+      position: fixed;
+      background: #e0f0ff;
+      color: #000;
+      font-family: "Times New Roman","Imperial",serif;
+      font-size: 0.9rem;
+      padding: 14px 20px;
+      border-radius: 18px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.25);
+      z-index: 1000;
+      width: 250px;           /* dimensione fissa */
+      text-align: center;
+      line-height: 1.4;
+      display: none;
     }
 
-    .bubble b { font-weight:700; font-size:1rem; }
+    .bubble b { font-weight: 700; font-size: 1rem; }
 
-    /* Triangolino azzurro verso il basso */
+    /* Triangolino */
     .bubble::after {
-      content:"";
-      position:absolute;
-      bottom:-12px;
-      left:50%;
-      transform:translateX(-50%);
-      border-width:12px 10px 0 10px;
-      border-style:solid;
-      border-color:#e0f0ff transparent transparent transparent;
+      content: "";
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 12px 10px 0 10px;
+      border-style: solid;
+      border-color: #e0f0ff transparent transparent transparent;
     }
 
-    /* Prima nuvoletta */
+    /* Prima nuvoletta: centrata e poco sopra il bordo */
     #bubble1 {
-      bottom:90px;                 /* appena sopra l'icona Safari */
-      left:50%;
-      transform:translateX(-50%);
+      bottom: 140px;  /* lascia spazio per l'icona sotto */
+      left: 50%;
+      transform: translateX(-50%);
     }
 
-    /* Icona Safari sotto il primo fumetto */
+    /* Icona Safari quasi appoggiata al bordo inferiore */
     #safariIcon {
-      position:fixed;
-      bottom:25px;
-      left:50%;
-      transform:translateX(-50%);
-      width:40px;
-      height:40px;
-      background:url('https://upload.wikimedia.org/wikipedia/commons/4/4e/Safari_browser_logo.svg') center/contain no-repeat;
-      opacity:0.85;
-      cursor:pointer;
+      position: fixed;
+      bottom: 10px;  /* quasi attaccata al bordo */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/4/4e/Safari_browser_logo.svg') center/contain no-repeat;
+      opacity: 0.95;
+      cursor: pointer;
     }
 
     /* Seconda nuvoletta */
     #bubble2 {
-      bottom:30%;                  /* sopra il menu a tendina iOS */
-      left:50%;
-      transform:translateX(-50%);
+      bottom: 30%;  /* sopra il menu a tendina iOS */
+      left: 50%;
+      transform: translateX(-50%);
     }
   </style>
 </head>
@@ -114,9 +114,11 @@
   <img id="logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS logo">
 
   <!-- Link per tornare al sito -->
-  <a id="backLink" href="https://www.artbooms.com/" target="_blank" rel="noopener">per tornare alla home clicca qui</a>
+  <a id="backLink" href="https://www.artbooms.com/" target="_blank" rel="noopener">
+    per tornare alla home clicca qui
+  </a>
 
-  <!-- Primo fumetto -->
+  <!-- Prima nuvoletta -->
   <div id="bubble1" class="bubble">
     <span>Per scaricare l’app<br><b>clicca qui</b></span>
   </div>
@@ -124,7 +126,7 @@
   <!-- Icona Safari -->
   <div id="safariIcon"></div>
 
-  <!-- Secondo fumetto -->
+  <!-- Seconda nuvoletta -->
   <div id="bubble2" class="bubble">
     <span>E adesso scegli:<br><b>Aggiungi alla schermata home</b></span>
   </div>
