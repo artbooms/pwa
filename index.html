@@ -21,10 +21,16 @@
 
   <style>
     body {
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      min-height:100vh; margin:0; background:#fff;
-      font-family: "Times New Roman", "Imperial", serif;
-      color:#000; text-align:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      margin:0;
+      background:#fff;
+      font-family:"Times New Roman","Imperial",serif;
+      color:#000;
+      text-align:center;
       overflow:hidden;
     }
 
@@ -48,13 +54,14 @@
       position:fixed;
       background:#e0f0ff;
       color:#000;
-      font-family: "Times New Roman", "Imperial", serif;
+      font-family:"Times New Roman","Imperial",serif;
       font-size:0.9rem;
       padding:14px 20px;
       border-radius:18px;
       box-shadow:0 3px 15px rgba(0,0,0,0.25);
       z-index:1000;
-      max-width:280px;
+      width:250px;                 /* dimensione fissa */
+      text-align:center;
       line-height:1.4;
       display:none;
     }
@@ -73,46 +80,44 @@
       border-color:#e0f0ff transparent transparent transparent;
     }
 
+    /* Prima nuvoletta */
+    #bubble1 {
+      bottom:90px;                 /* appena sopra l'icona Safari */
+      left:50%;
+      transform:translateX(-50%);
+    }
+
     /* Icona Safari sotto il primo fumetto */
     #safariIcon {
       position:fixed;
-      bottom:20px;
+      bottom:25px;
       left:50%;
       transform:translateX(-50%);
       width:40px;
       height:40px;
       background:url('https://upload.wikimedia.org/wikipedia/commons/4/4e/Safari_browser_logo.svg') center/contain no-repeat;
       opacity:0.85;
+      cursor:pointer;
     }
 
-    /* Secondo fumetto (nero, opposto) */
+    /* Seconda nuvoletta */
     #bubble2 {
-      background:#111;
-      color:#fff;
-      bottom:150px;
-      right:20px;
-    }
-    #bubble2::after {
-      content:"";
-      position:absolute;
-      top:-12px;
-      right:25px;
-      border-width:0 10px 12px 10px;
-      border-style:solid;
-      border-color:transparent transparent #111 transparent;
+      bottom:30%;                  /* sopra il menu a tendina iOS */
+      left:50%;
+      transform:translateX(-50%);
     }
   </style>
 </head>
 
 <body>
-  <!-- Logo corretto dal repository GitHub -->
+  <!-- Logo -->
   <img id="logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS logo">
 
   <!-- Link per tornare al sito -->
   <a id="backLink" href="https://www.artbooms.com/" target="_blank" rel="noopener">per tornare alla home clicca qui</a>
 
   <!-- Primo fumetto -->
-  <div id="bubble1" class="bubble" style="bottom:80px; left:20px;">
+  <div id="bubble1" class="bubble">
     <span>Per scaricare l’app<br><b>clicca qui</b></span>
   </div>
 
@@ -132,26 +137,29 @@
 
     // Mostra i fumetti solo su dispositivi Apple
     window.addEventListener('load', () => {
-      if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-        const bubble1 = document.getElementById('bubble1');
-        const bubble2 = document.getElementById('bubble2');
-        const safariIcon = document.getElementById('safariIcon');
+      const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const bubble1 = document.getElementById('bubble1');
+      const bubble2 = document.getElementById('bubble2');
+      const safariIcon = document.getElementById('safariIcon');
 
-        // Mostra il primo fumetto subito
+      if (isiOS) {
+        // mostra la prima nuvoletta
         bubble1.style.display = 'block';
 
-        // Quando l'utente clicca l'icona Safari:
-        // 1️⃣ nascondi il primo fumetto
-        // 2️⃣ mostra il secondo
         safariIcon.addEventListener('click', () => {
+          // nascondi la prima e mostra la seconda
           bubble1.style.display = 'none';
           bubble2.style.display = 'block';
+
+          // la seconda scompare dopo 6 secondi
+          setTimeout(() => {
+            bubble2.style.display = 'none';
+          }, 6000);
         });
       } else {
-        // Nasconde tutto su Android (la PWA si installa nativamente)
-        document.getElementById('bubble1').style.display = 'none';
-        document.getElementById('bubble2').style.display = 'none';
-        document.getElementById('safariIcon').style.display = 'none';
+        bubble1.style.display = 'none';
+        bubble2.style.display = 'none';
+        safariIcon.style.display = 'none';
       }
     });
   </script>
