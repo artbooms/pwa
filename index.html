@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
   <title>Installa ARTBOOMS</title>
 
@@ -20,92 +20,75 @@
   <link rel="apple-touch-icon" href="/icons/icon-512.png">
 
   <style>
-    body {
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:flex-start;
-      min-height:100vh;
-      margin:0;
-      background:#fff;
-      font-family:"Times New Roman","Imperial",serif;
-      color:#000;
-      text-align:center;
+    :root { --bubble-bg:#e0f0ff; --bubble-border:#000; }
+
+    body{
+      display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+      min-height:100vh; margin:0; background:#fff;
+      font-family:"Times New Roman","Imperial",serif; color:#000; text-align:center;
       overflow:hidden;
     }
 
-    /* Logo con margine superiore */
-    #logo {
-      max-width:85%;
-      height:auto;
-      margin-top:60px;
-      margin-bottom:20px;
-    }
+    /* Logo */
+    #logo{ max-width:85%; height:auto; margin-top:60px; margin-bottom:20px; }
 
-    /* --- POPUP STYLE --- */
-    .bubble {
+    /* --- POPUP (stile standard) --- */
+    .bubble{
       position:fixed;
-      background:#e0f0ff;
+      background:var(--bubble-bg);
       color:#000;
-      border:1px solid #444;
+      border:1px solid var(--bubble-border);
       border-radius:14px;
-      box-shadow:0 3px 10px rgba(0,0,0,0.25);
-      font-family:"Times New Roman","Imperial",serif;
-      font-size:0.9rem;
-      line-height:1.4;
+      box-shadow:0 3px 10px rgba(0,0,0,.25);
+      font-size:.9rem; line-height:1.4;
       padding:14px 20px;
-      width:80%;
-      max-width:300px;
+      width:min(300px, 80%);
       text-align:center;
       z-index:1000;
       display:none;
     }
+    .bubble b{ font-weight:700; }
 
-    .bubble b { font-weight:700; }
-
-    .bubble::after {
+    /* punta verso il basso */
+    .bubble::after{
       content:"";
       position:absolute;
-      bottom:-10px;
-      left:50%;
-      transform:translateX(-50%);
+      bottom:-10px; left:50%; transform:translateX(-50%);
       border-width:10px 10px 0 10px;
       border-style:solid;
-      border-color:#e0f0ff transparent transparent transparent;
+      border-color:var(--bubble-bg) transparent transparent transparent;
     }
 
-    /* Prima nuvoletta */
-    #bubble1 {
-      bottom:100px;
-      left:50%;
-      transform:translateX(-50%);
+    /* Prima nuvoletta: bassa e centrata (considera safe area) */
+    #bubble1{
+      left:50%; transform:translateX(-50%);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 112px);
     }
 
-    /* Icona Safari */
-    #safariIcon {
+    /* Pulsante "Condividi" iOS (SVG) quasi appoggiato al bordo */
+    #shareButton{
       position:fixed;
-      bottom:35px;
-      left:50%;
-      transform:translateX(-50%);
-      width:42px;
-      height:42px;
-      background:url('https://upload.wikimedia.org/wikipedia/commons/4/4e/Safari_browser_logo.svg') center/contain no-repeat;
-      opacity:0.95;
-      cursor:pointer;
+      left:50%; transform:translateX(-50%);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+      width:44px; height:44px;
+      display:none; /* visibile solo su iOS Safari */
       z-index:1001;
+      background:transparent; border:none; padding:0; cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
     }
+    /* SVG responsive */
+    #shareButton svg{ width:100%; height:100%; display:block; }
 
-    /* Seconda nuvoletta */
-    #bubble2 {
-      bottom:30%;
-      left:50%;
-      transform:translateX(-50%);
+    /* Seconda nuvoletta: sopra il foglio di condivisione */
+    #bubble2{
+      left:50%; transform:translateX(-50%);
+      bottom: 30%;
     }
   </style>
 </head>
 
 <body>
-  <!-- Logo in formato webp con fallback jpg -->
+  <!-- Logo webp con fallback -->
   <picture>
     <source srcset="/images/artbooms-logo.webp" type="image/webp">
     <img id="logo" src="/images/artbooms-logo.jpg" alt="ARTBOOMS logo">
@@ -116,8 +99,15 @@
     <span>Per installare l’app<br><b>tocca il pulsante di condivisione qui sotto ⬇️</b></span>
   </div>
 
-  <!-- Icona Safari / Condividi -->
-  <div id="safariIcon" title="Pulsante Condividi"></div>
+  <!-- Pulsante "Condividi" iOS (SVG) -->
+  <button id="shareButton" aria-label="Condividi">
+    <!-- icona iOS share: quadrato con freccia verso l'alto -->
+    <svg viewBox="0 0 24 24" fill="none" stroke="#0a84ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 3v10"></path>
+      <path d="M8.5 6.5 12 3l3.5 3.5"></path>
+      <rect x="4" y="11" width="16" height="10" rx="2.5" ry="2.5"></rect>
+    </svg>
+  </button>
 
   <!-- Seconda nuvoletta -->
   <div id="bubble2" class="bubble">
@@ -125,7 +115,7 @@
   </div>
 
   <script>
-    // Registra il service worker
+    // SW
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(console.error);
     }
@@ -134,25 +124,27 @@
       const ua = navigator.userAgent;
       const isiOS = /iphone|ipad|ipod/i.test(ua);
       const isSafari = /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua);
+
       const bubble1 = document.getElementById('bubble1');
       const bubble2 = document.getElementById('bubble2');
-      const safariIcon = document.getElementById('safariIcon');
+      const shareButton = document.getElementById('shareButton');
 
-      // Solo per Safari su iPhone/iPad
+      // Solo Safari su iOS: mostra guida
       if (isiOS && isSafari) {
         bubble1.style.display = 'block';
-        safariIcon.style.display = 'block';
+        shareButton.style.display = 'block';
 
-        safariIcon.addEventListener('click', () => {
+        // Tap sul pulsante di guida (nostro): passa alla fase 2
+        shareButton.addEventListener('click', () => {
           bubble1.style.display = 'none';
           bubble2.style.display = 'block';
-          setTimeout(() => bubble2.style.display = 'none', 6000);
-        });
+          setTimeout(() => { bubble2.style.display = 'none'; }, 6000);
+        }, { passive: true });
       } else {
-        // Niente pop-up su Android o desktop
+        // Niente guida su Android e Desktop
         bubble1.style.display = 'none';
         bubble2.style.display = 'none';
-        safariIcon.style.display = 'none';
+        shareButton.style.display = 'none';
       }
     });
   </script>
