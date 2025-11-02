@@ -7,7 +7,7 @@
   <title>Installa ARTBOOMS</title>
 
   <meta name="description" content="Installa ARTBOOMS, il magazine online d'arte contemporanea.">
-  <link rel="canonical" href="https://www.artbooms.com/">
+  <link rel="canonical" href="https://pwa-jvlo.onrender.com/">
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -22,73 +22,99 @@
   <style>
     :root { --bubble-bg:#e0f0ff; --bubble-border:#000; }
 
-    body{
-      display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-      min-height:100vh; margin:0; background:#fff;
-      font-family:"Times New Roman","Imperial",serif; color:#000; text-align:center;
+    body {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      min-height:100vh;
+      margin:0;
+      background:#fff;
+      font-family:"Times New Roman","Imperial",serif;
+      color:#000;
+      text-align:center;
       overflow:hidden;
     }
 
     /* Logo */
-    #logo{ max-width:85%; height:auto; margin-top:60px; margin-bottom:20px; }
+    #logo {
+      max-width:85%;
+      height:auto;
+      margin-top:60px;
+      margin-bottom:20px;
+    }
 
-    /* --- POPUP (stile standard) --- */
-    .bubble{
+    /* --- POPUP STYLE --- */
+    .bubble {
       position:fixed;
       background:var(--bubble-bg);
       color:#000;
       border:1px solid var(--bubble-border);
       border-radius:14px;
-      box-shadow:0 3px 10px rgba(0,0,0,.25);
-      font-size:.9rem; line-height:1.4;
+      box-shadow:0 3px 10px rgba(0,0,0,0.25);
+      font-size:0.9rem;
+      line-height:1.4;
       padding:14px 20px;
-      width:min(300px, 80%);
+      width:min(300px,80%);
       text-align:center;
       z-index:1000;
       display:none;
     }
-    .bubble b{ font-weight:700; }
 
-    /* punta verso il basso */
-    .bubble::after{
+    .bubble b { font-weight:700; }
+
+    .bubble::after {
       content:"";
       position:absolute;
-      bottom:-10px; left:50%; transform:translateX(-50%);
+      bottom:-10px;
+      left:50%;
+      transform:translateX(-50%);
       border-width:10px 10px 0 10px;
       border-style:solid;
       border-color:var(--bubble-bg) transparent transparent transparent;
     }
 
-    /* Prima nuvoletta: bassa e centrata (considera safe area) */
-    #bubble1{
-      left:50%; transform:translateX(-50%);
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 112px);
+    /* Prima nuvoletta (in basso sopra l'icona blu) */
+    #bubble1 {
+      left:50%;
+      transform:translateX(-50%);
+      bottom:calc(env(safe-area-inset-bottom,0px) + 112px);
     }
 
-    /* Pulsante "Condividi" iOS (SVG) quasi appoggiato al bordo */
-    #shareButton{
+    /* Pulsante "Condividi" iOS (SVG) */
+    #shareButton {
       position:fixed;
-      left:50%; transform:translateX(-50%);
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
-      width:44px; height:44px;
-      display:none; /* visibile solo su iOS Safari */
+      left:50%;
+      transform:translateX(-50%);
+      bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
+      width:44px;
+      height:44px;
+      display:none;
       z-index:1001;
-      background:transparent; border:none; padding:0; cursor:pointer;
-      -webkit-tap-highlight-color: transparent;
+      background:transparent;
+      border:none;
+      padding:0;
+      cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
     }
-    /* SVG responsive */
-    #shareButton svg{ width:100%; height:100%; display:block; }
 
-    /* Seconda nuvoletta: sopra il foglio di condivisione */
-    #bubble2{
-      left:50%; transform:translateX(-50%);
-      bottom: 30%;
+    #shareButton svg {
+      width:100%;
+      height:100%;
+      display:block;
+    }
+
+    /* Seconda nuvoletta: subito sotto il logo */
+    #bubble2 {
+      top:110px;
+      left:50%;
+      transform:translateX(-50%);
     }
   </style>
 </head>
 
 <body>
-  <!-- Logo webp con fallback -->
+  <!-- Logo webp con fallback jpg -->
   <picture>
     <source srcset="/images/artbooms-logo.webp" type="image/webp">
     <img id="logo" src="/images/artbooms-logo.jpg" alt="ARTBOOMS logo">
@@ -101,7 +127,6 @@
 
   <!-- Pulsante "Condividi" iOS (SVG) -->
   <button id="shareButton" aria-label="Condividi">
-    <!-- icona iOS share: quadrato con freccia verso l'alto -->
     <svg viewBox="0 0 24 24" fill="none" stroke="#0a84ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M12 3v10"></path>
       <path d="M8.5 6.5 12 3l3.5 3.5"></path>
@@ -111,11 +136,10 @@
 
   <!-- Seconda nuvoletta -->
   <div id="bubble2" class="bubble">
-    <span>Ora scegli:<br><b>Aggiungi alla schermata Home 📱</b></span>
+    <span>Dopo aver toccato <b>Condividi</b>,<br>scegli <b>Aggiungi alla schermata Home 📱</b></span>
   </div>
 
   <script>
-    // SW
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(console.error);
     }
@@ -129,19 +153,17 @@
       const bubble2 = document.getElementById('bubble2');
       const shareButton = document.getElementById('shareButton');
 
-      // Solo Safari su iOS: mostra guida
+      function showStep2() {
+        bubble1.style.display = 'none';
+        bubble2.style.display = 'block';
+        setTimeout(() => { bubble2.style.display = 'none'; }, 10000);
+      }
+
       if (isiOS && isSafari) {
         bubble1.style.display = 'block';
         shareButton.style.display = 'block';
-
-        // Tap sul pulsante di guida (nostro): passa alla fase 2
-        shareButton.addEventListener('click', () => {
-          bubble1.style.display = 'none';
-          bubble2.style.display = 'block';
-          setTimeout(() => { bubble2.style.display = 'none'; }, 6000);
-        }, { passive: true });
+        shareButton.addEventListener('click', showStep2, { passive:true });
       } else {
-        // Niente guida su Android e Desktop
         bubble1.style.display = 'none';
         bubble2.style.display = 'none';
         shareButton.style.display = 'none';
