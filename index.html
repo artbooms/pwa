@@ -9,221 +9,563 @@
   <meta name="description" content="Installa ARTBOOMS, il magazine online d'arte contemporanea.">
   <link rel="canonical" href="https://www.artbooms.com/">
 
-  <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-  <!-- Icone -->
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/icon-512.png">
 
   <style>
-    :root { --bubble-bg:#e0f0ff; --bubble-border:#000; }
+    :root {
+      --bg: #f3f3f3;
+      --text: #172b3a;
+      --white: #ffffff;
+      --black: #000000;
+      --bubble-bg: #e0f0ff;
+      --bubble-border: #000000;
+      --soft-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: var(--bg);
+    }
 
     body {
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:flex-start;
-      min-height:100vh;
-      margin:0;
-      background:#fff;
-      font-family:"Times New Roman","Imperial",serif;
-      color:#000;
-      text-align:center;
-      overflow:hidden;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* Logo */
+    /* =========================
+       APPLE FLOW - LASCIATO INVARIATO
+       ========================= */
+    #appleFlow {
+      display: none;
+      min-height: 100vh;
+      background: #ffffff;
+      text-align: center;
+      font-family: "Times New Roman", "Imperial", serif;
+      color: #000000;
+      overflow: hidden;
+      position: relative;
+    }
+
     #logo {
-      max-width:85%;
-      height:auto;
-      margin-top:60px;
-      margin-bottom:20px;
+      max-width: 85%;
+      height: auto;
+      margin-top: 60px;
+      margin-bottom: 20px;
     }
 
-    /* --- POPUP (fumetti) --- */
     .bubble {
-      position:fixed;
-      background:var(--bubble-bg);
-      color:#000;
-      border:1px solid var(--bubble-border);
-      border-radius:14px;
-      box-shadow:0 3px 10px rgba(0,0,0,.25);
-      font-size:.9rem;
-      line-height:1.4;
-      padding:14px 20px;
-      width:min(300px,80%);
-      text-align:center;
-      z-index:1000;
-      display:none;
+      position: fixed;
+      background: var(--bubble-bg);
+      color: #000000;
+      border: 1px solid var(--bubble-border);
+      border-radius: 14px;
+      box-shadow: 0 3px 10px rgba(0,0,0,.25);
+      font-size: .9rem;
+      line-height: 1.4;
+      padding: 14px 20px;
+      width: min(300px, 80%);
+      text-align: center;
+      z-index: 1000;
+      display: none;
     }
 
-    .bubble b { font-weight:700; }
+    .bubble b {
+      font-weight: 700;
+    }
 
     .bubble::after {
-      content:"";
-      position:absolute;
-      bottom:-10px;
-      left:50%;
-      transform:translateX(-50%);
-      border-width:10px 10px 0 10px;
-      border-style:solid;
-      border-color:var(--bubble-bg) transparent transparent transparent;
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 10px 10px 0 10px;
+      border-style: solid;
+      border-color: var(--bubble-bg) transparent transparent transparent;
     }
 
-    /* Prima nuvoletta: in basso sopra il pulsante */
     #bubble1 {
-      left:50%;
-      transform:translateX(-50%);
-      bottom:calc(env(safe-area-inset-bottom,0px) + 112px);
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 112px);
     }
 
-    /* Pulsante "Condividi" iOS (decorativo) */
     #shareButton {
-      position:fixed;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
-      width:44px;
-      height:44px;
-      display:none;
-      z-index:1001;
-      background:transparent;
-      border:none;
-      padding:0;
-      cursor:default;
-      pointer-events:none; /* NON cliccabile */
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+      width: 44px;
+      height: 44px;
+      display: none;
+      z-index: 1001;
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: default;
+      pointer-events: none;
     }
 
     #shareButton svg {
-      width:100%;
-      height:100%;
-      display:block;
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
-    /* Messaggio testuale centrale (nuovo) */
     #overlayHint {
-      position:fixed;
-      inset:0;
-      background:rgba(255,255,255,0.95);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:2000;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
     }
 
     .hint-box {
-      background:var(--bubble-bg);
-      color:#000;
-      border:1px solid var(--bubble-border);
-      border-radius:16px;
-      padding:20px 24px;
-      font-size:1rem;
-      line-height:1.5;
-      text-align:center;
-      max-width:80%;
-      box-shadow:0 3px 15px rgba(0,0,0,0.25);
-      font-family:"Times New Roman","Imperial",serif;
+      background: var(--bubble-bg);
+      color: #000000;
+      border: 1px solid var(--bubble-border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      font-size: 1rem;
+      line-height: 1.5;
+      text-align: center;
+      max-width: 80%;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.25);
+      font-family: "Times New Roman", "Imperial", serif;
     }
 
-    /* Pulsante "Installa" per browser compatibili */
     #installButton {
-      margin-top:20px;
-      background:#e0f0ff;
-      border:1px solid #000;
-      border-radius:10px;
-      padding:10px 18px;
-      font-size:0.9rem;
-      cursor:pointer;
-      display:none;
+      margin-top: 20px;
+      background: #e0f0ff;
+      border: 1px solid #000000;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: none;
     }
 
+    /* =========================
+       NON-APPLE LANDING
+       ========================= */
+    #mainLauncher {
+      display: none;
+      min-height: 100vh;
+      width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .launcher-shell {
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5vh 24px 8vh;
+    }
+
+    .launcher-card {
+      width: 100%;
+      max-width: 640px;
+      min-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .top-space {
+      flex: 0 0 16vh;
+      min-height: 90px;
+    }
+
+    .icon-wrap {
+      width: clamp(112px, 18vw, 132px);
+      height: clamp(112px, 18vw, 132px);
+      border-radius: 26px;
+      background: #ececec;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+
+    .icon-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .app-title {
+      margin: 0 0 46px 0;
+      font-size: clamp(2rem, 3.4vw, 2.2rem);
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: #193042;
+      text-transform: uppercase;
+    }
+
+    .buttons {
+      width: min(100%, 540px);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .pill-button {
+      width: 100%;
+      min-height: clamp(76px, 10vw, 90px);
+      border: none;
+      border-radius: 999px;
+      padding: 0 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: var(--soft-shadow);
+      transition: transform 0.14s ease, box-shadow 0.14s ease, opacity 0.14s ease;
+      font: inherit;
+    }
+
+    .pill-button:active {
+      transform: scale(0.988);
+    }
+
+    .pill-button.primary {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .pill-button.secondary {
+      background: #ffffff;
+      color: #111111;
+    }
+
+    .pill-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .pill-label {
+      font-size: clamp(1rem, 2vw, 1.12rem);
+      line-height: 1.2;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .pill-arrow {
+      font-size: clamp(2.2rem, 3vw, 2.6rem);
+      line-height: 1;
+      font-weight: 300;
+      flex-shrink: 0;
+      margin-left: 10px;
+      transform: translateY(-1px);
+    }
+
+    .bell-icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .bottom-space {
+      flex: 1 0 22vh;
+      min-height: 150px;
+    }
+
+    @media (max-width: 640px) {
+      .launcher-shell {
+        padding: 4vh 18px 8vh;
+      }
+
+      .top-space {
+        flex-basis: 18vh;
+      }
+
+      .app-title {
+        margin-bottom: 42px;
+      }
+
+      .buttons {
+        width: min(100%, 570px);
+        gap: 18px;
+      }
+
+      .pill-button {
+        padding: 0 26px;
+      }
+
+      .pill-left {
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .launcher-card {
+        min-height: 90vh;
+      }
+
+      .top-space {
+        flex-basis: 17vh;
+        min-height: 78px;
+      }
+
+      .icon-wrap {
+        width: 128px;
+        height: 128px;
+        border-radius: 24px;
+        margin-bottom: 20px;
+      }
+
+      .app-title {
+        font-size: 1.95rem;
+        margin-bottom: 44px;
+      }
+
+      .pill-button {
+        min-height: 76px;
+        padding: 0 24px;
+      }
+
+      .pill-label {
+        font-size: 1rem;
+      }
+
+      .pill-arrow {
+        font-size: 2.3rem;
+      }
+
+      .bottom-space {
+        min-height: 120px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .launcher-card {
+        min-height: 100vh;
+      }
+
+      .top-space {
+        flex-basis: 14vh;
+      }
+
+      .bottom-space {
+        min-height: 180px;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <!-- Logo -->
-  <picture>
-    <source srcset="/images/artbooms-logo.webp" type="image/webp">
-    <img id="logo" src="/images/artbooms-logo.jpg" alt="ARTBOOMS logo">
-  </picture>
+  <!-- APPLE FLOW -->
+  <div id="appleFlow">
+    <picture>
+      <source srcset="/images/artbooms-logo.webp" type="image/webp">
+      <img id="logo" src="/images/artbooms-logo.jpg" alt="ARTBOOMS logo">
+    </picture>
 
-  <!-- Prima nuvoletta -->
-  <div id="bubble1" class="bubble">
-    <span>Per installare l’app<br><b>tocca il pulsante di condivisione qui sotto ⬇️</b></span>
-  </div>
-
-  <!-- Pulsante "Condividi" (solo decorativo) -->
-  <div id="shareButton" aria-label="Condividi">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#0a84ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 3v10"></path>
-      <path d="M8.5 6.5 12 3l3.5 3.5"></path>
-      <rect x="4" y="11" width="16" height="10" rx="2.5" ry="2.5"></rect>
-    </svg>
-  </div>
-
-  <!-- Overlay testuale (nuova guida) -->
-  <div id="overlayHint">
-    <div class="hint-box">
-      Nel menù che si apre ora,<br>scegli <b>Aggiungi alla schermata Home</b>.
+    <div id="bubble1" class="bubble">
+      <span>Per installare l’app<br><b>tocca il pulsante di condivisione qui sotto ⬇️</b></span>
     </div>
+
+    <div id="shareButton" aria-label="Condividi">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0a84ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 3v10"></path>
+        <path d="M8.5 6.5 12 3l3.5 3.5"></path>
+        <rect x="4" y="11" width="16" height="10" rx="2.5" ry="2.5"></rect>
+      </svg>
+    </div>
+
+    <div id="overlayHint">
+      <div class="hint-box">
+        Nel menù che si apre ora,<br>scegli <b>Aggiungi alla schermata Home</b>.
+      </div>
+    </div>
+
+    <button id="installButton">Installa ARTBOOMS</button>
   </div>
 
-  <!-- Pulsante di installazione diretto (per Chrome/Edge) -->
-  <button id="installButton">Installa ARTBOOMS</button>
+  <!-- NON-APPLE LANDING -->
+  <main id="mainLauncher" aria-label="Launcher ARTBOOMS">
+    <div class="launcher-shell">
+      <div class="launcher-card">
+        <div class="top-space"></div>
+
+        <div class="icon-wrap" aria-hidden="true">
+          <img src="/icons/icon-512.png" alt="">
+        </div>
+
+        <h1 class="app-title">ARTBOOMS</h1>
+
+        <div class="buttons">
+          <button id="launchButton" class="pill-button primary" type="button">
+            <span class="pill-left">
+              <span class="pill-label">avviare l'app</span>
+            </span>
+            <span class="pill-arrow" aria-hidden="true">›</span>
+          </button>
+
+          <button id="notifyButton" class="pill-button secondary" type="button" aria-live="polite">
+            <span class="pill-left">
+              <svg class="bell-icon" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 18H9"></path>
+                <path d="M18 16v-5a6 6 0 1 0-12 0v5l-2 2h16l-2-2Z"></path>
+                <path d="M10.5 20a1.5 1.5 0 0 0 3 0"></path>
+              </svg>
+              <span id="notifyLabel" class="pill-label">Attiva notifiche</span>
+            </span>
+          </button>
+        </div>
+
+        <div class="bottom-space"></div>
+      </div>
+    </div>
+  </main>
 
   <script>
-    // Registra il Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(console.error);
     }
 
-    let deferredPrompt;
+    let deferredPrompt = null;
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      document.getElementById('installButton').style.display = 'inline-block';
+      const installButton = document.getElementById('installButton');
+      if (installButton) installButton.style.display = 'inline-block';
     });
 
-    document.getElementById('installButton').addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`Scelta utente: ${outcome}`);
+    window.addEventListener('appinstalled', () => {
       deferredPrompt = null;
-      document.getElementById('installButton').style.display = 'none';
     });
 
-    window.addEventListener('load', () => {
+    async function requestNotificationPermission() {
+      if (!('Notification' in window)) {
+        return 'unsupported';
+      }
+
+      if (Notification.permission === 'granted') {
+        return 'granted';
+      }
+
+      try {
+        const permission = await Notification.requestPermission();
+        return permission;
+      } catch (err) {
+        console.error(err);
+        return 'error';
+      }
+    }
+
+    function updateNotificationLabel() {
+      const label = document.getElementById('notifyLabel');
+      if (!label) return;
+
+      if (!('Notification' in window)) {
+        label.textContent = 'Attiva notifiche';
+        return;
+      }
+
+      if (Notification.permission === 'granted') {
+        label.textContent = 'Notifiche abilitate';
+      } else {
+        label.textContent = 'Attiva notifiche';
+      }
+    }
+
+    function goToMainSite() {
+      window.location.href = 'https://www.artbooms.com/';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
       const ua = navigator.userAgent;
       const isiOS = /iphone|ipad|ipod/i.test(ua);
       const isSafari = /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua);
 
+      const appleFlow = document.getElementById('appleFlow');
+      const mainLauncher = document.getElementById('mainLauncher');
+
       const bubble1 = document.getElementById('bubble1');
       const shareButton = document.getElementById('shareButton');
       const overlayHint = document.getElementById('overlayHint');
+      const installButton = document.getElementById('installButton');
+
+      const launchButton = document.getElementById('launchButton');
+      const notifyButton = document.getElementById('notifyButton');
 
       if (isiOS && isSafari) {
-        // Mostra la prima nuvoletta
+        appleFlow.style.display = 'block';
+        mainLauncher.style.display = 'none';
+
         bubble1.style.display = 'block';
         shareButton.style.display = 'block';
 
-        // Dopo 5s mostra il messaggio centrale (invece della seconda nuvoletta)
         setTimeout(() => {
           bubble1.style.display = 'none';
           overlayHint.style.display = 'flex';
-          setTimeout(() => { overlayHint.style.display = 'none'; }, 2500);
+          setTimeout(() => {
+            overlayHint.style.display = 'none';
+          }, 2500);
         }, 5000);
-      } else {
-        // Android e Desktop -> nessuna guida, solo installButton
-        bubble1.style.display = 'none';
-        shareButton.style.display = 'none';
-        overlayHint.style.display = 'none';
+
+        if (installButton) {
+          installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            try {
+              await deferredPrompt.prompt();
+              await deferredPrompt.userChoice;
+            } catch (err) {
+              console.error(err);
+            }
+            deferredPrompt = null;
+            installButton.style.display = 'none';
+          });
+        }
+
+        return;
       }
+
+      appleFlow.style.display = 'none';
+      mainLauncher.style.display = 'block';
+
+      updateNotificationLabel();
+
+      launchButton.addEventListener('click', () => {
+        goToMainSite();
+      });
+
+      notifyButton.addEventListener('click', async () => {
+        const result = await requestNotificationPermission();
+        if (result === 'granted') {
+          updateNotificationLabel();
+        }
+      });
     });
   </script>
 </body>
