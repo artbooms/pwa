@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
-  <title>Installa ARTBOOMS</title>
+  <title>ARTBOOMS</title>
 
-  <meta name="description" content="Installa ARTBOOMS, il magazine online d'arte contemporanea.">
+  <meta name="description" content="ARTBOOMS, magazine online d'arte contemporanea.">
   <link rel="canonical" href="https://www.artbooms.com/">
 
   <link rel="manifest" href="/manifest.json">
@@ -20,7 +20,7 @@
   <style>
     :root {
       --bg: #f3f3f3;
-      --text: #172b3a;
+      --text: #193042;
       --white: #ffffff;
       --black: #000000;
       --bubble-bg: #e0f0ff;
@@ -46,7 +46,7 @@
     }
 
     /* =========================
-       APPLE FLOW - LASCIATO INVARIATO
+       APPLE FLOW - PREINSTALL
        ========================= */
     #appleFlow {
       display: none;
@@ -149,19 +149,8 @@
       font-family: "Times New Roman", "Imperial", serif;
     }
 
-    #installButton {
-      margin-top: 20px;
-      background: #e0f0ff;
-      border: 1px solid #000000;
-      border-radius: 10px;
-      padding: 10px 18px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: none;
-    }
-
     /* =========================
-       NON-APPLE LANDING
+       LAUNCHER
        ========================= */
     #mainLauncher {
       display: none;
@@ -382,7 +371,7 @@
 </head>
 
 <body>
-  <!-- APPLE FLOW -->
+  <!-- APPLE PREINSTALL -->
   <div id="appleFlow">
     <picture>
       <source srcset="/images/artbooms-logo.webp" type="image/webp">
@@ -406,11 +395,9 @@
         Nel menù che si apre ora,<br>scegli <b>Aggiungi alla schermata Home</b>.
       </div>
     </div>
-
-    <button id="installButton">Installa ARTBOOMS</button>
   </div>
 
-  <!-- NON-APPLE LANDING -->
+  <!-- LAUNCHER -->
   <main id="mainLauncher" aria-label="Launcher ARTBOOMS">
     <div class="launcher-shell">
       <div class="launcher-card">
@@ -452,18 +439,20 @@
       navigator.serviceWorker.register('/sw.js').catch(console.error);
     }
 
-    let deferredPrompt = null;
+    function isStandaloneMode() {
+      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    }
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      const installButton = document.getElementById('installButton');
-      if (installButton) installButton.style.display = 'inline-block';
-    });
+    function isAppleMobileSafari() {
+      const ua = navigator.userAgent || '';
+      const isiPhoneOrIPad = /iphone|ipad|ipod/i.test(ua);
+      const isSafari = /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua);
+      return isiPhoneOrIPad && isSafari;
+    }
 
-    window.addEventListener('appinstalled', () => {
-      deferredPrompt = null;
-    });
+    function goToMainSite() {
+      window.location.href = 'https://www.artbooms.com/';
+    }
 
     async function requestNotificationPermission() {
       if (!('Notification' in window)) {
@@ -499,27 +488,21 @@
       }
     }
 
-    function goToMainSite() {
-      window.location.href = 'https://www.artbooms.com/';
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
-      const ua = navigator.userAgent;
-      const isiOS = /iphone|ipad|ipod/i.test(ua);
-      const isSafari = /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua);
-
       const appleFlow = document.getElementById('appleFlow');
       const mainLauncher = document.getElementById('mainLauncher');
 
       const bubble1 = document.getElementById('bubble1');
       const shareButton = document.getElementById('shareButton');
       const overlayHint = document.getElementById('overlayHint');
-      const installButton = document.getElementById('installButton');
 
       const launchButton = document.getElementById('launchButton');
       const notifyButton = document.getElementById('notifyButton');
 
-      if (isiOS && isSafari) {
+      const installed = isStandaloneMode();
+      const appleMobileSafari = isAppleMobileSafari();
+
+      if (appleMobileSafari && !installed) {
         appleFlow.style.display = 'block';
         mainLauncher.style.display = 'none';
 
@@ -533,20 +516,6 @@
             overlayHint.style.display = 'none';
           }, 2500);
         }, 5000);
-
-        if (installButton) {
-          installButton.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            try {
-              await deferredPrompt.prompt();
-              await deferredPrompt.userChoice;
-            } catch (err) {
-              console.error(err);
-            }
-            deferredPrompt = null;
-            installButton.style.display = 'none';
-          });
-        }
 
         return;
       }
