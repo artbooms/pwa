@@ -52,6 +52,27 @@
     }
 
     /* =========================
+       INLINE SMALL LOGO ONLY IN STEP 3
+       ========================= */
+    .inline-app-logo {
+      display: inline-flex;
+      width: 18px;
+      height: 18px;
+      margin-left: 5px;
+      vertical-align: -3px;
+      border-radius: 4px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .inline-app-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* =========================
        APPLE MOBILE GUIDE
        ========================= */
     #appleGuide {
@@ -83,7 +104,9 @@
       overflow: hidden;
     }
 
-    .apple-guide-header {
+    .apple-guide-header,
+    .mac-guide-header,
+    .fallback-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -93,14 +116,18 @@
       color: #1f2a36;
     }
 
-    .apple-guide-close {
+    .apple-guide-close,
+    .mac-guide-close,
+    .fallback-close {
       font-size: 1.65rem;
       line-height: 1;
       color: #4f5c68;
       font-weight: 300;
     }
 
-    .apple-app-row {
+    .apple-app-row,
+    .mac-app-row,
+    .fallback-app-row {
       margin: 0 18px 16px;
       border: 1px solid #f0f0f0;
       border-radius: 14px;
@@ -111,7 +138,9 @@
       background: #fafafa;
     }
 
-    .apple-app-icon {
+    .apple-app-icon,
+    .mac-app-icon,
+    .fallback-app-icon {
       width: 54px;
       height: 54px;
       border-radius: 14px;
@@ -120,19 +149,25 @@
       background: #ececec;
     }
 
-    .apple-app-icon img {
+    .apple-app-icon img,
+    .mac-app-icon img,
+    .fallback-app-icon img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .apple-app-meta {
+    .apple-app-meta,
+    .mac-app-meta,
+    .fallback-app-meta {
       text-align: left;
       min-width: 0;
     }
 
-    .apple-app-name {
+    .apple-app-name,
+    .mac-app-name,
+    .fallback-app-name {
       margin: 0;
       font-size: 1rem;
       font-weight: 700;
@@ -140,20 +175,24 @@
       line-height: 1.2;
     }
 
-    .apple-app-domain {
+    .apple-app-domain,
+    .mac-app-domain,
+    .fallback-app-domain {
       margin: 3px 0 0 0;
       font-size: 0.86rem;
       color: #7a8792;
       line-height: 1.2;
     }
 
-    .apple-steps {
+    .apple-steps,
+    .mac-steps {
       list-style: none;
       margin: 0;
       padding: 0 18px 18px;
     }
 
-    .apple-steps li {
+    .apple-steps li,
+    .mac-steps li {
       display: grid;
       grid-template-columns: 22px 1fr;
       gap: 10px;
@@ -164,7 +203,8 @@
       line-height: 1.45;
     }
 
-    .apple-steps li:last-child {
+    .apple-steps li:last-child,
+    .mac-steps li:last-child {
       margin-bottom: 0;
     }
 
@@ -246,6 +286,127 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    /* =========================
+       MAC SAFARI GUIDE
+       ========================= */
+    #macGuide {
+      display: none;
+      min-height: 100vh;
+      background: var(--bg);
+      align-items: center;
+      justify-content: center;
+      padding: 24px 18px;
+    }
+
+    .mac-guide-card {
+      width: 100%;
+      max-width: 420px;
+      background: #ffffff;
+      border: 1px solid #eeeeee;
+      border-radius: 22px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+    }
+
+    .mac-guide-footer {
+      border-top: 1px solid #ededed;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      padding: 18px;
+      color: #556270;
+      font-size: 0.93rem;
+      line-height: 1.45;
+    }
+
+    .mac-guide-footer-icon {
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      color: #6a7783;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mac-guide-footer-divider {
+      width: 1px;
+      align-self: stretch;
+      background: #e4e4e4;
+      flex-shrink: 0;
+    }
+
+    /* =========================
+       FALLBACK CARD
+       ========================= */
+    #fallbackCard {
+      display: none;
+      min-height: 100vh;
+      background: var(--bg);
+      align-items: center;
+      justify-content: center;
+      padding: 24px 18px;
+    }
+
+    .fallback-card {
+      width: 100%;
+      max-width: 360px;
+      background: #ffffff;
+      border: 1px solid #eeeeee;
+      border-radius: 20px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      padding-bottom: 18px;
+    }
+
+    .fallback-text {
+      margin: 0 18px 16px;
+      text-align: center;
+      color: #4b5a66;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .fallback-actions {
+      padding: 0 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .fallback-btn {
+      width: 100%;
+      min-height: 48px;
+      border: none;
+      border-radius: 999px;
+      padding: 0 16px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .fallback-btn.primary {
+      background: #111827;
+      color: #ffffff;
+    }
+
+    .fallback-btn.secondary {
+      background: #ffffff;
+      color: #223646;
+      border: 1px solid #d9d9d9;
+    }
+
+    .fallback-btn svg {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
     }
 
     /* =========================
@@ -499,7 +660,11 @@
           <li>
             <span class="step-num">3.</span>
             <div class="step-content">
-              Cerca poi l’icona di ARTBOOMS sulla schermata Home
+              Cerca poi l’icona di ARTBOOMS
+              <span class="inline-app-logo" aria-hidden="true">
+                <img src="/icons/icon-192.png" alt="">
+              </span>
+              sulla schermata Home
             </div>
           </li>
         </ol>
@@ -518,6 +683,102 @@
         </div>
         <div class="apple-mini-icon">⌂</div>
         <div class="apple-mini-icon">⧉</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="macGuide">
+    <div class="mac-guide-card">
+      <div class="mac-guide-header">
+        <span>Installa l'app</span>
+        <span class="mac-guide-close" aria-hidden="true">×</span>
+      </div>
+
+      <div class="mac-app-row">
+        <div class="mac-app-icon">
+          <img src="/icons/icon-192.png" alt="ARTBOOMS">
+        </div>
+
+        <div class="mac-app-meta">
+          <p class="mac-app-name">ARTBOOMS</p>
+          <p class="mac-app-domain">artbooms.com</p>
+        </div>
+      </div>
+
+      <ol class="mac-steps">
+        <li>
+          <span class="step-num">1.</span>
+          <div class="step-content">Apri questa pagina in <b>Safari</b></div>
+        </li>
+        <li>
+          <span class="step-num">2.</span>
+          <div class="step-content">Nel menu <b>File</b> scegli <span class="ios-chip">Aggiungi al Dock</span></div>
+        </li>
+        <li>
+          <span class="step-num">3.</span>
+          <div class="step-content">
+            Apri poi l’icona di ARTBOOMS
+            <span class="inline-app-logo" aria-hidden="true">
+              <img src="/icons/icon-192.png" alt="">
+            </span>
+            dal Dock
+          </div>
+        </li>
+      </ol>
+
+      <div class="mac-guide-footer">
+        <div class="mac-guide-footer-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#6a7783" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+            <rect x="3" y="4" width="18" height="12" rx="2"></rect>
+            <path d="M8 20h8"></path>
+            <path d="M12 16v4"></path>
+          </svg>
+        </div>
+        <div class="mac-guide-footer-divider"></div>
+        <div>L'app verrà aggiunta al Dock per un accesso rapido, come qualsiasi altra app del Mac.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fallbackCard">
+    <div class="fallback-card">
+      <div class="fallback-header">
+        <span>Installazione non disponibile</span>
+        <span class="fallback-close" aria-hidden="true">×</span>
+      </div>
+
+      <div class="fallback-app-row">
+        <div class="fallback-app-icon">
+          <img src="/icons/icon-192.png" alt="ARTBOOMS">
+        </div>
+
+        <div class="fallback-app-meta">
+          <p class="fallback-app-name">ARTBOOMS</p>
+          <p class="fallback-app-domain">artbooms.com</p>
+        </div>
+      </div>
+
+      <p class="fallback-text">
+        Il browser attuale non supporta l’installazione automatica. Apri questa pagina in <b>Chrome</b> o <b>Edge</b> per continuare.
+      </p>
+
+      <div class="fallback-actions">
+        <button id="copyLinkButton" class="fallback-btn primary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11 4"></path>
+            <path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 1 0 7.07 7.07L13 20"></path>
+          </svg>
+          Copia link
+        </button>
+
+        <button id="openSiteButton" class="fallback-btn secondary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 3h7v7"></path>
+            <path d="M10 14 21 3"></path>
+            <path d="M21 14v4a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h4"></path>
+          </svg>
+          Apri il sito
+        </button>
       </div>
     </div>
   </section>
@@ -564,7 +825,7 @@
     }
 
     let deferredPrompt = null;
-    let autoInstallAttempted = false;
+    let installAttemptFinished = false;
 
     function isStandaloneMode() {
       return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
@@ -575,6 +836,13 @@
       const platform = navigator.platform || "";
       const touch = navigator.maxTouchPoints || 0;
       return /iphone|ipad|ipod/i.test(ua) || (platform === "MacIntel" && touch > 1);
+    }
+
+    function isMacSafari() {
+      const ua = navigator.userAgent || "";
+      const isMac = /macintosh|mac os x/i.test(ua);
+      const isSafari = /safari/i.test(ua) && !/chrome|chromium|edg/i.test(ua);
+      return isMac && isSafari;
     }
 
     function goToMainSite() {
@@ -607,63 +875,116 @@
       }
     }
 
+    function showSection(sectionId) {
+      document.getElementById("appleGuide").style.display = "none";
+      document.getElementById("macGuide").style.display = "none";
+      document.getElementById("fallbackCard").style.display = "none";
+      document.getElementById("mainLauncher").style.display = "none";
+
+      const target = document.getElementById(sectionId);
+      if (!target) return;
+
+      if (sectionId === "mainLauncher") {
+        target.style.display = "block";
+      } else {
+        target.style.display = "flex";
+      }
+    }
+
+    async function copyInstallLink() {
+      const url = window.location.origin + "/?install=1";
+      try {
+        await navigator.clipboard.writeText(url);
+        alert("Link copiato.");
+      } catch (err) {
+        console.error(err);
+        alert(url);
+      }
+    }
+
     async function tryAutoInstall() {
-      if (autoInstallAttempted || !deferredPrompt || isStandaloneMode()) return;
-      autoInstallAttempted = true;
+      if (!deferredPrompt || isStandaloneMode()) return false;
 
       try {
         await deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
+        const choice = await deferredPrompt.userChoice;
+        installAttemptFinished = true;
+        return !!(choice && choice.outcome === "accepted");
       } catch (err) {
         console.error(err);
+        installAttemptFinished = true;
+        return false;
       }
     }
 
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       deferredPrompt = e;
-
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("install") === "1" && !isAppleMobile()) {
-        setTimeout(() => {
-          tryAutoInstall();
-        }, 250);
-      }
     });
 
     window.addEventListener("appinstalled", () => {
       deferredPrompt = null;
+      installAttemptFinished = true;
       history.replaceState({}, "", "/");
+      showSection("mainLauncher");
     });
 
     document.addEventListener("DOMContentLoaded", () => {
       const params = new URLSearchParams(window.location.search);
       const installRequested = params.get("install") === "1";
+      const appleInstallRequested = params.get("apple-install") === "1";
 
       const installed = isStandaloneMode();
       const appleMobile = isAppleMobile();
-
-      const appleGuide = document.getElementById("appleGuide");
-      const mainLauncher = document.getElementById("mainLauncher");
+      const macSafari = isMacSafari();
 
       const launchButton = document.getElementById("launchButton");
       const notifyButton = document.getElementById("notifyButton");
-
-      if (!installed && appleMobile) {
-        appleGuide.style.display = "flex";
-        mainLauncher.style.display = "none";
-        return;
-      }
-
-      appleGuide.style.display = "none";
-      mainLauncher.style.display = "block";
+      const copyLinkButton = document.getElementById("copyLinkButton");
+      const openSiteButton = document.getElementById("openSiteButton");
 
       updateNotificationLabel();
 
-      if (installRequested && !installed && !appleMobile) {
+      if (!installed && appleInstallRequested && appleMobile) {
+        showSection("appleGuide");
+        return;
+      }
+
+      if (!installed && appleInstallRequested && macSafari) {
+        showSection("macGuide");
+        return;
+      }
+
+      if (!installed && appleMobile && !installRequested) {
+        showSection("appleGuide");
+        return;
+      }
+
+      if (!installed && macSafari && !installRequested) {
+        showSection("macGuide");
+        return;
+      }
+
+      showSection("mainLauncher");
+
+      if (installRequested && !installed && !appleMobile && !macSafari) {
+        setTimeout(async () => {
+          const accepted = await tryAutoInstall();
+
+          if (!accepted && !isStandaloneMode()) {
+            setTimeout(() => {
+              if (!isStandaloneMode()) {
+                showSection("fallbackCard");
+              }
+            }, 300);
+          }
+        }, 300);
+
         setTimeout(() => {
-          tryAutoInstall();
-        }, 400);
+          if (!deferredPrompt && !installAttemptFinished && !isStandaloneMode()) {
+            showSection("fallbackCard");
+          }
+        }, 1600);
       }
 
       launchButton.addEventListener("click", () => {
@@ -676,6 +997,9 @@
           updateNotificationLabel();
         }
       });
+
+      copyLinkButton.addEventListener("click", copyInstallLink);
+      openSiteButton.addEventListener("click", goToMainSite);
     });
   </script>
 </body>
