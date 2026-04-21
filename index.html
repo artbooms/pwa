@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
+  <meta name="robots" content="noindex,follow">
   <title>ARTBOOMS</title>
 
   <meta name="description" content="ARTBOOMS, magazine online d'arte contemporanea.">
@@ -23,9 +24,12 @@
       --text: #193042;
       --white: #ffffff;
       --black: #000000;
-      --bubble-bg: #e0f0ff;
-      --bubble-border: #000000;
+      --muted: #6e7b88;
+      --line: #e8e8e8;
       --soft-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+      --card-shadow: 0 10px 24px rgba(0, 0, 0, 0.10);
+      --ios-blue: #0a84ff;
+      --ios-tab: #8fa3b7;
     }
 
     * {
@@ -47,157 +51,201 @@
       color: var(--text);
     }
 
-    .hidden {
-      display: none !important;
-    }
-
     /* =========================
-       APPLE MOBILE PREINSTALL
+       APPLE MOBILE GUIDE
        ========================= */
-    #appleFlow {
+    #appleGuide {
       display: none;
       min-height: 100vh;
       background: #ffffff;
-      text-align: center;
-      font-family: "Times New Roman", "Imperial", serif;
-      color: #000000;
+      align-items: center;
+      justify-content: center;
+      padding: 22px 18px calc(22px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .apple-guide-shell {
+      width: 100%;
+      max-width: 430px;
+      min-height: calc(100vh - 44px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .apple-guide-card {
+      width: 100%;
+      max-width: 360px;
+      background: #ffffff;
+      border: 1px solid #eeeeee;
+      border-radius: 22px;
+      box-shadow: var(--card-shadow);
       overflow: hidden;
-      position: relative;
     }
 
-    #logo {
-      max-width: 85%;
-      height: auto;
-      margin-top: 60px;
-      margin-bottom: 20px;
+    .apple-guide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 18px 12px;
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: #1f2a36;
     }
 
-    .bubble {
-      position: fixed;
-      background: var(--bubble-bg);
-      color: #000000;
-      border: 1px solid var(--bubble-border);
+    .apple-guide-close {
+      font-size: 1.65rem;
+      line-height: 1;
+      color: #4f5c68;
+      font-weight: 300;
+    }
+
+    .apple-app-row {
+      margin: 0 18px 16px;
+      border: 1px solid #f0f0f0;
       border-radius: 14px;
-      box-shadow: 0 3px 10px rgba(0,0,0,.25);
-      font-size: .9rem;
-      line-height: 1.4;
-      padding: 14px 20px;
-      width: min(300px, 80%);
-      text-align: center;
-      z-index: 1000;
-      display: none;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #fafafa;
     }
 
-    .bubble b {
-      font-weight: 700;
+    .apple-app-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #ececec;
     }
 
-    .bubble::after {
-      content: "";
-      position: absolute;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-width: 10px 10px 0 10px;
-      border-style: solid;
-      border-color: var(--bubble-bg) transparent transparent transparent;
-    }
-
-    #bubble1 {
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 112px);
-    }
-
-    #shareButton {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
-      width: 44px;
-      height: 44px;
-      display: none;
-      z-index: 1001;
-      background: transparent;
-      border: none;
-      padding: 0;
-      cursor: default;
-      pointer-events: none;
-    }
-
-    #shareButton svg {
+    .apple-app-icon img {
       width: 100%;
       height: 100%;
+      object-fit: cover;
       display: block;
     }
 
-    #overlayHint {
-      position: fixed;
-      inset: 0;
-      background: rgba(255,255,255,0.95);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
+    .apple-app-meta {
+      text-align: left;
+      min-width: 0;
     }
 
-    .hint-box {
-      background: var(--bubble-bg);
-      color: #000000;
-      border: 1px solid var(--bubble-border);
-      border-radius: 16px;
-      padding: 20px 24px;
-      font-size: 1rem;
-      line-height: 1.5;
-      text-align: center;
-      max-width: 80%;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.25);
-      font-family: "Times New Roman", "Imperial", serif;
-    }
-
-    /* =========================
-       APPLE DESKTOP PREINSTALL
-       ========================= */
-    #appleDesktopFlow {
-      display: none;
-      min-height: 100vh;
-      background: var(--bg);
-      align-items: center;
-      justify-content: center;
-      padding: 32px 20px;
-    }
-
-    .apple-desktop-card {
-      width: 100%;
-      max-width: 560px;
-      background: #ffffff;
-      border-radius: 28px;
-      box-shadow: var(--soft-shadow);
-      padding: 36px 28px;
-      text-align: center;
-    }
-
-    .apple-desktop-card img {
-      width: 110px;
-      height: 110px;
-      border-radius: 24px;
-      display: block;
-      margin: 0 auto 20px;
-    }
-
-    .apple-desktop-card h1 {
-      margin: 0 0 16px 0;
-      font-size: 2rem;
-      line-height: 1;
-      color: var(--text);
-      text-transform: uppercase;
-    }
-
-    .apple-desktop-card p {
+    .apple-app-name {
       margin: 0;
       font-size: 1rem;
-      line-height: 1.55;
-      color: #23394b;
+      font-weight: 700;
+      color: #223646;
+      line-height: 1.2;
+    }
+
+    .apple-app-domain {
+      margin: 3px 0 0 0;
+      font-size: 0.86rem;
+      color: #7a8792;
+      line-height: 1.2;
+    }
+
+    .apple-steps {
+      list-style: none;
+      margin: 0;
+      padding: 0 18px 18px;
+    }
+
+    .apple-steps li {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 10px;
+      align-items: start;
+      margin-bottom: 16px;
+      color: #2b3947;
+      font-size: 0.98rem;
+      line-height: 1.45;
+    }
+
+    .apple-steps li:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-num {
+      font-weight: 700;
+      color: #172b3a;
+      text-align: right;
+      padding-top: 1px;
+    }
+
+    .step-content {
+      text-align: left;
+    }
+
+    .share-inline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      vertical-align: -3px;
+      margin: 0 3px;
+    }
+
+    .share-inline svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    .ios-chip {
+      display: inline-block;
+      margin-left: 4px;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: #f1f3f5;
+      border: 1px solid #e7eaee;
+      font-size: 0.86rem;
+      color: #33485a;
+      white-space: nowrap;
+    }
+
+    .apple-bottom-bar {
+      width: 100%;
+      max-width: 360px;
+      margin-top: 14px;
+      background: #ffffff;
+      border: 1px solid #f0f0f0;
+      border-radius: 18px;
+      box-shadow: var(--card-shadow);
+      padding: 10px 14px;
+      display: grid;
+      grid-template-columns: 28px 28px 1fr 28px 28px 28px;
+      align-items: center;
+      gap: 10px;
+      color: var(--ios-tab);
+    }
+
+    .apple-mini-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ios-tab);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .apple-domain-pill {
+      min-width: 0;
+      border: 1px solid #eceff2;
+      border-radius: 999px;
+      padding: 8px 12px;
+      text-align: center;
+      font-size: 0.88rem;
+      color: #485b6a;
+      background: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* =========================
@@ -260,7 +308,7 @@
       line-height: 1;
       font-weight: 600;
       letter-spacing: 0.01em;
-      color: var(--text);
+      color: #193042;
       text-transform: uppercase;
     }
 
@@ -405,42 +453,74 @@
 </head>
 
 <body>
-  <div id="appleFlow">
-    <picture>
-      <source srcset="/images/artbooms-logo.webp" type="image/webp">
-      <img id="logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS logo">
-    </picture>
+  <section id="appleGuide">
+    <div class="apple-guide-shell">
+      <div class="apple-guide-card">
+        <div class="apple-guide-header">
+          <span>Installa l'app</span>
+          <span class="apple-guide-close" aria-hidden="true">×</span>
+        </div>
 
-    <div id="bubble1" class="bubble">
-      <span>Per installare l’app<br><b>tocca il pulsante di condivisione qui sotto ⬇️</b></span>
-    </div>
+        <div class="apple-app-row">
+          <div class="apple-app-icon">
+            <img src="/icons/icon-192.png" alt="ARTBOOMS">
+          </div>
 
-    <div id="shareButton" aria-label="Condividi">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#0a84ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 3v10"></path>
-        <path d="M8.5 6.5 12 3l3.5 3.5"></path>
-        <rect x="4" y="11" width="16" height="10" rx="2.5" ry="2.5"></rect>
-      </svg>
-    </div>
+          <div class="apple-app-meta">
+            <p class="apple-app-name">ARTBOOMS</p>
+            <p class="apple-app-domain">artbooms.com</p>
+          </div>
+        </div>
 
-    <div id="overlayHint">
-      <div class="hint-box">
-        Nel menù che si apre ora,<br>scegli <b>Aggiungi alla schermata Home</b>.
+        <ol class="apple-steps">
+          <li>
+            <span class="step-num">1.</span>
+            <div class="step-content">
+              Premi
+              <span class="share-inline" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#0a84ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3v10"></path>
+                  <path d="M8.5 6.5 12 3l3.5 3.5"></path>
+                  <rect x="4" y="11" width="16" height="10" rx="2.5" ry="2.5"></rect>
+                </svg>
+              </span>
+              nel menu del browser
+            </div>
+          </li>
+
+          <li>
+            <span class="step-num">2.</span>
+            <div class="step-content">
+              Scorri in basso e tocca
+              <span class="ios-chip">Aggiungi alla schermata Home</span>
+            </div>
+          </li>
+
+          <li>
+            <span class="step-num">3.</span>
+            <div class="step-content">
+              Cerca poi l’icona di ARTBOOMS sulla schermata Home
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <div class="apple-bottom-bar" aria-hidden="true">
+        <div class="apple-mini-icon">‹</div>
+        <div class="apple-mini-icon">›</div>
+        <div class="apple-domain-pill">artbooms.com</div>
+        <div class="apple-mini-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#8fa3b7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <path d="M12 3v10"></path>
+            <path d="M8.5 6.5 12 3l3.5 3.5"></path>
+            <rect x="4" y="11" width="16" height="10" rx="2.5" ry="2.5"></rect>
+          </svg>
+        </div>
+        <div class="apple-mini-icon">⌂</div>
+        <div class="apple-mini-icon">⧉</div>
       </div>
     </div>
-  </div>
-
-  <div id="appleDesktopFlow">
-    <div class="apple-desktop-card">
-      <img src="/icons/icon-512.png" alt="ARTBOOMS">
-      <h1>ARTBOOMS</h1>
-      <p>
-        Per installare l’app su Mac, apri il menu <b>File</b> di Safari e scegli
-        <b>Aggiungi al Dock</b>.<br><br>
-        Dopo l’installazione, aprendo l’icona si aprirà questa landing.
-      </p>
-    </div>
-  </div>
+  </section>
 
   <main id="mainLauncher" aria-label="Launcher ARTBOOMS">
     <div class="launcher-shell">
@@ -456,7 +536,7 @@
         <div class="buttons">
           <button id="launchButton" class="pill-button primary" type="button">
             <span class="pill-left">
-              <span id="launchLabel" class="pill-label">avviare l'app</span>
+              <span class="pill-label">avviare l'app</span>
             </span>
             <span class="pill-arrow" aria-hidden="true">›</span>
           </button>
@@ -484,24 +564,17 @@
     }
 
     let deferredPrompt = null;
-    let autoInstallTried = false;
+    let autoInstallAttempted = false;
 
     function isStandaloneMode() {
       return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
     }
 
-    function isAppleMobileSafari() {
+    function isAppleMobile() {
       const ua = navigator.userAgent || "";
-      const isiPhoneOrIPad = /iphone|ipad|ipod/i.test(ua);
-      const isSafari = /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua);
-      return isiPhoneOrIPad && isSafari;
-    }
-
-    function isMacSafari() {
-      const ua = navigator.userAgent || "";
-      const isMac = /macintosh|mac os x/i.test(ua);
-      const isSafari = /safari/i.test(ua) && !/chrome|chromium|edg/i.test(ua);
-      return isMac && isSafari;
+      const platform = navigator.platform || "";
+      const touch = navigator.maxTouchPoints || 0;
+      return /iphone|ipad|ipod/i.test(ua) || (platform === "MacIntel" && touch > 1);
     }
 
     function goToMainSite() {
@@ -522,12 +595,6 @@
         : "Attiva notifiche";
     }
 
-    function updateLaunchLabel(installed) {
-      const label = document.getElementById("launchLabel");
-      if (!label) return;
-      label.textContent = installed ? "avviare l'app" : "installa l'app";
-    }
-
     async function requestNotificationPermission() {
       if (!("Notification" in window)) return "unsupported";
       if (Notification.permission === "granted") return "granted";
@@ -541,16 +608,12 @@
     }
 
     async function tryAutoInstall() {
-      if (autoInstallTried || !deferredPrompt || isStandaloneMode()) return;
-      autoInstallTried = true;
+      if (autoInstallAttempted || !deferredPrompt || isStandaloneMode()) return;
+      autoInstallAttempted = true;
 
       try {
         await deferredPrompt.prompt();
-        const choice = await deferredPrompt.userChoice;
-        if (choice && choice.outcome === "accepted") {
-          updateLaunchLabel(true);
-          history.replaceState({}, "", "/");
-        }
+        await deferredPrompt.userChoice;
       } catch (err) {
         console.error(err);
       }
@@ -561,88 +624,49 @@
       deferredPrompt = e;
 
       const params = new URLSearchParams(window.location.search);
-      if (params.get("install") === "1" && !isAppleMobileSafari() && !isMacSafari()) {
-        tryAutoInstall();
+      if (params.get("install") === "1" && !isAppleMobile()) {
+        setTimeout(() => {
+          tryAutoInstall();
+        }, 250);
       }
     });
 
     window.addEventListener("appinstalled", () => {
       deferredPrompt = null;
-      updateLaunchLabel(true);
       history.replaceState({}, "", "/");
     });
 
     document.addEventListener("DOMContentLoaded", () => {
       const params = new URLSearchParams(window.location.search);
       const installRequested = params.get("install") === "1";
-      const appleInstallRequested = params.get("apple-install") === "1";
 
       const installed = isStandaloneMode();
-      const appleMobileSafari = isAppleMobileSafari();
-      const macSafari = isMacSafari();
+      const appleMobile = isAppleMobile();
 
-      const appleFlow = document.getElementById("appleFlow");
-      const appleDesktopFlow = document.getElementById("appleDesktopFlow");
+      const appleGuide = document.getElementById("appleGuide");
       const mainLauncher = document.getElementById("mainLauncher");
-
-      const bubble1 = document.getElementById("bubble1");
-      const shareButton = document.getElementById("shareButton");
-      const overlayHint = document.getElementById("overlayHint");
 
       const launchButton = document.getElementById("launchButton");
       const notifyButton = document.getElementById("notifyButton");
 
-      if (appleMobileSafari && !installed && (appleInstallRequested || !installRequested)) {
-        appleFlow.style.display = "block";
+      if (!installed && appleMobile) {
+        appleGuide.style.display = "flex";
         mainLauncher.style.display = "none";
-        appleDesktopFlow.style.display = "none";
-
-        bubble1.style.display = "block";
-        shareButton.style.display = "block";
-
-        setTimeout(() => {
-          bubble1.style.display = "none";
-          overlayHint.style.display = "flex";
-          setTimeout(() => {
-            overlayHint.style.display = "none";
-          }, 2500);
-        }, 5000);
-
         return;
       }
 
-      if (macSafari && !installed && appleInstallRequested) {
-        appleFlow.style.display = "none";
-        mainLauncher.style.display = "none";
-        appleDesktopFlow.style.display = "flex";
-        return;
-      }
-
-      appleFlow.style.display = "none";
-      appleDesktopFlow.style.display = "none";
+      appleGuide.style.display = "none";
       mainLauncher.style.display = "block";
 
-      updateLaunchLabel(installed ? true : !installRequested ? true : false);
       updateNotificationLabel();
 
-      if (installRequested && !installed && !appleMobileSafari && !macSafari) {
+      if (installRequested && !installed && !appleMobile) {
         setTimeout(() => {
           tryAutoInstall();
-        }, 300);
+        }, 400);
       }
 
-      launchButton.addEventListener("click", async () => {
-        if (isStandaloneMode()) {
-          goToMainSite();
-          return;
-        }
-
-        if (deferredPrompt) {
-          updateLaunchLabel(false);
-          await tryAutoInstall();
-          return;
-        }
-
+      launchButton.addEventListener("click", () => {
         goToMainSite();
       });
 
