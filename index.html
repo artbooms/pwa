@@ -43,10 +43,16 @@
     body {
       min-height: 100vh;
       overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     /* =========================
-       APPLE FLOW - PREINSTALL
+       APPLE MOBILE PREINSTALL
        ========================= */
     #appleFlow {
       display: none;
@@ -150,14 +156,57 @@
     }
 
     /* =========================
-       LAUNCHER
+       APPLE DESKTOP PREINSTALL
+       ========================= */
+    #appleDesktopFlow {
+      display: none;
+      min-height: 100vh;
+      background: var(--bg);
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+    }
+
+    .apple-desktop-card {
+      width: 100%;
+      max-width: 560px;
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: var(--soft-shadow);
+      padding: 36px 28px;
+      text-align: center;
+    }
+
+    .apple-desktop-card img {
+      width: 110px;
+      height: 110px;
+      border-radius: 24px;
+      display: block;
+      margin: 0 auto 20px;
+    }
+
+    .apple-desktop-card h1 {
+      margin: 0 0 16px 0;
+      font-size: 2rem;
+      line-height: 1;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    .apple-desktop-card p {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.55;
+      color: #23394b;
+    }
+
+    /* =========================
+       MAIN LAUNCHER
        ========================= */
     #mainLauncher {
       display: none;
       min-height: 100vh;
       width: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: var(--text);
       background: var(--bg);
     }
 
@@ -211,7 +260,7 @@
       line-height: 1;
       font-weight: 600;
       letter-spacing: 0.01em;
-      color: #193042;
+      color: var(--text);
       text-transform: uppercase;
     }
 
@@ -231,7 +280,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      text-decoration: none;
       cursor: pointer;
       box-shadow: var(--soft-shadow);
       transition: transform 0.14s ease, box-shadow 0.14s ease, opacity 0.14s ease;
@@ -353,29 +401,14 @@
         min-height: 120px;
       }
     }
-
-    @media (min-width: 1024px) {
-      .launcher-card {
-        min-height: 100vh;
-      }
-
-      .top-space {
-        flex-basis: 14vh;
-      }
-
-      .bottom-space {
-        min-height: 180px;
-      }
-    }
   </style>
 </head>
 
 <body>
-  <!-- APPLE PREINSTALL -->
   <div id="appleFlow">
     <picture>
       <source srcset="/images/artbooms-logo.webp" type="image/webp">
-      <img id="logo" src="/images/artbooms-logo.jpg" alt="ARTBOOMS logo">
+      <img id="logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS logo">
     </picture>
 
     <div id="bubble1" class="bubble">
@@ -397,7 +430,18 @@
     </div>
   </div>
 
-  <!-- LAUNCHER -->
+  <div id="appleDesktopFlow">
+    <div class="apple-desktop-card">
+      <img src="/icons/icon-512.png" alt="ARTBOOMS">
+      <h1>ARTBOOMS</h1>
+      <p>
+        Per installare l’app su Mac, apri il menu <b>File</b> di Safari e scegli
+        <b>Aggiungi al Dock</b>.<br><br>
+        Dopo l’installazione, aprendo l’icona si aprirà questa landing.
+      </p>
+    </div>
+  </div>
+
   <main id="mainLauncher" aria-label="Launcher ARTBOOMS">
     <div class="launcher-shell">
       <div class="launcher-card">
@@ -412,7 +456,7 @@
         <div class="buttons">
           <button id="launchButton" class="pill-button primary" type="button">
             <span class="pill-left">
-              <span class="pill-label">avviare l'app</span>
+              <span id="launchLabel" class="pill-label">avviare l'app</span>
             </span>
             <span class="pill-arrow" aria-hidden="true">›</span>
           </button>
@@ -435,103 +479,176 @@
   </main>
 
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(console.error);
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(console.error);
     }
 
+    let deferredPrompt = null;
+    let autoInstallTried = false;
+
     function isStandaloneMode() {
-      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
     }
 
     function isAppleMobileSafari() {
-      const ua = navigator.userAgent || '';
+      const ua = navigator.userAgent || "";
       const isiPhoneOrIPad = /iphone|ipad|ipod/i.test(ua);
       const isSafari = /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua);
       return isiPhoneOrIPad && isSafari;
     }
 
-    function goToMainSite() {
-      window.location.href = 'https://www.artbooms.com/';
+    function isMacSafari() {
+      const ua = navigator.userAgent || "";
+      const isMac = /macintosh|mac os x/i.test(ua);
+      const isSafari = /safari/i.test(ua) && !/chrome|chromium|edg/i.test(ua);
+      return isMac && isSafari;
     }
 
-    async function requestNotificationPermission() {
-      if (!('Notification' in window)) {
-        return 'unsupported';
-      }
-
-      if (Notification.permission === 'granted') {
-        return 'granted';
-      }
-
-      try {
-        const permission = await Notification.requestPermission();
-        return permission;
-      } catch (err) {
-        console.error(err);
-        return 'error';
-      }
+    function goToMainSite() {
+      window.location.href = "https://www.artbooms.com/";
     }
 
     function updateNotificationLabel() {
-      const label = document.getElementById('notifyLabel');
+      const label = document.getElementById("notifyLabel");
       if (!label) return;
 
-      if (!('Notification' in window)) {
-        label.textContent = 'Attiva notifiche';
+      if (!("Notification" in window)) {
+        label.textContent = "Attiva notifiche";
         return;
       }
 
-      if (Notification.permission === 'granted') {
-        label.textContent = 'Notifiche abilitate';
-      } else {
-        label.textContent = 'Attiva notifiche';
+      label.textContent = Notification.permission === "granted"
+        ? "Notifiche abilitate"
+        : "Attiva notifiche";
+    }
+
+    function updateLaunchLabel(installed) {
+      const label = document.getElementById("launchLabel");
+      if (!label) return;
+      label.textContent = installed ? "avviare l'app" : "installa l'app";
+    }
+
+    async function requestNotificationPermission() {
+      if (!("Notification" in window)) return "unsupported";
+      if (Notification.permission === "granted") return "granted";
+
+      try {
+        return await Notification.requestPermission();
+      } catch (err) {
+        console.error(err);
+        return "error";
       }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const appleFlow = document.getElementById('appleFlow');
-      const mainLauncher = document.getElementById('mainLauncher');
+    async function tryAutoInstall() {
+      if (autoInstallTried || !deferredPrompt || isStandaloneMode()) return;
+      autoInstallTried = true;
 
-      const bubble1 = document.getElementById('bubble1');
-      const shareButton = document.getElementById('shareButton');
-      const overlayHint = document.getElementById('overlayHint');
+      try {
+        await deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        if (choice && choice.outcome === "accepted") {
+          updateLaunchLabel(true);
+          history.replaceState({}, "", "/");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-      const launchButton = document.getElementById('launchButton');
-      const notifyButton = document.getElementById('notifyButton');
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("install") === "1" && !isAppleMobileSafari() && !isMacSafari()) {
+        tryAutoInstall();
+      }
+    });
+
+    window.addEventListener("appinstalled", () => {
+      deferredPrompt = null;
+      updateLaunchLabel(true);
+      history.replaceState({}, "", "/");
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      const installRequested = params.get("install") === "1";
+      const appleInstallRequested = params.get("apple-install") === "1";
 
       const installed = isStandaloneMode();
       const appleMobileSafari = isAppleMobileSafari();
+      const macSafari = isMacSafari();
 
-      if (appleMobileSafari && !installed) {
-        appleFlow.style.display = 'block';
-        mainLauncher.style.display = 'none';
+      const appleFlow = document.getElementById("appleFlow");
+      const appleDesktopFlow = document.getElementById("appleDesktopFlow");
+      const mainLauncher = document.getElementById("mainLauncher");
 
-        bubble1.style.display = 'block';
-        shareButton.style.display = 'block';
+      const bubble1 = document.getElementById("bubble1");
+      const shareButton = document.getElementById("shareButton");
+      const overlayHint = document.getElementById("overlayHint");
+
+      const launchButton = document.getElementById("launchButton");
+      const notifyButton = document.getElementById("notifyButton");
+
+      if (appleMobileSafari && !installed && (appleInstallRequested || !installRequested)) {
+        appleFlow.style.display = "block";
+        mainLauncher.style.display = "none";
+        appleDesktopFlow.style.display = "none";
+
+        bubble1.style.display = "block";
+        shareButton.style.display = "block";
 
         setTimeout(() => {
-          bubble1.style.display = 'none';
-          overlayHint.style.display = 'flex';
+          bubble1.style.display = "none";
+          overlayHint.style.display = "flex";
           setTimeout(() => {
-            overlayHint.style.display = 'none';
+            overlayHint.style.display = "none";
           }, 2500);
         }, 5000);
 
         return;
       }
 
-      appleFlow.style.display = 'none';
-      mainLauncher.style.display = 'block';
+      if (macSafari && !installed && appleInstallRequested) {
+        appleFlow.style.display = "none";
+        mainLauncher.style.display = "none";
+        appleDesktopFlow.style.display = "flex";
+        return;
+      }
 
+      appleFlow.style.display = "none";
+      appleDesktopFlow.style.display = "none";
+      mainLauncher.style.display = "block";
+
+      updateLaunchLabel(installed ? true : !installRequested ? true : false);
       updateNotificationLabel();
 
-      launchButton.addEventListener('click', () => {
+      if (installRequested && !installed && !appleMobileSafari && !macSafari) {
+        setTimeout(() => {
+          tryAutoInstall();
+        }, 300);
+      }
+
+      launchButton.addEventListener("click", async () => {
+        if (isStandaloneMode()) {
+          goToMainSite();
+          return;
+        }
+
+        if (deferredPrompt) {
+          updateLaunchLabel(false);
+          await tryAutoInstall();
+          return;
+        }
+
         goToMainSite();
       });
 
-      notifyButton.addEventListener('click', async () => {
+      notifyButton.addEventListener("click", async () => {
         const result = await requestNotificationPermission();
-        if (result === 'granted') {
+        if (result === "granted") {
           updateNotificationLabel();
         }
       });
