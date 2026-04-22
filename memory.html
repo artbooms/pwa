@@ -273,65 +273,208 @@
   </div>
 
   <script>
-    async function loadMemory() {
-      const list = document.getElementById("list");
-      const articleHost = document.getElementById("articleHost");
+    const NEWS_SITEMAP_URL = "https://artbooms-rss-x6pc.onrender.com/news-sitemap.xml";
+    const STORAGE_KEY = "artbooms-offline-memory-v1";
 
-      try {
-        const res = await fetch("/memory-data.json", { cache: "no-store" });
-        const data = await res.json();
-        const articles = Array.isArray(data.articles) ? data.articles : [];
+    function cleanHtmlFragment(fragmentHtml) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(fragmentHtml, "text/html");
+      const allowed = new Set(["P", "H2", "H3", "H4", "BLOCKQUOTE", "UL", "OL", "LI", "STRONG", "EM", "BR"]);
 
-        if (!articles.length) {
-          list.innerHTML = '<div class="empty">La memoria offline non è ancora pronta.</div>';
+      doc.body.querySelectorAll("*").forEach((el) => {
+        if (!allowed.has(el.tagName)) {
+          const parent = el.parentNode;
+          while (el.firstChild) parent.insertBefore(el.firstChild, el);
+          parent.removeChild(el);
           return;
         }
+        [...el.attributes].forEach(attr => el.removeAttribute(attr.name));
+      });
 
-        list.innerHTML = articles.map((article, idx) => `
-          <a href="#article-${idx}" class="card" data-article-index="${idx}">
-            <div class="hero">${article.image ? `<img src="${article.image}" alt="">` : ""}</div>
-            <div class="body">
-              <p class="date">${article.display_date || ""}</p>
-              <h2 class="title">${article.title || ""}</h2>
-              <p class="excerpt">${article.excerpt || ""}</p>
-            </div>
-          </a>
-        `).join("");
+      return doc.body.innerHTML;
+    }
 
-        articleHost.innerHTML = articles.map((article, idx) => `
-          <article id="article-${idx}" class="article">
-            <p class="meta">${article.display_date || ""}</p>
-            <h2>${article.title || ""}</h2>
-            ${article.image ? `<img src="${article.image}" alt="">` : ""}
-            <div class="content">${article.content_html || ""}</div>
-            <div class="actions">
-              <button class="ghost" type="button" data-back="1">Torna all'elenco</button>
-            </div>
-          </article>
-        `).join("");
+    function parseDateText(pubDate) {
+      if (!pubDate) return "";
+      return pubDate.slice(0, 10);
+    }
 
-        document.querySelectorAll("[data-article-index]").forEach((card) => {
-          card.addEventListener("click", (e) => {
-            e.preventDefault();
-            const idx = card.getAttribute("data-article-index");
-            document.querySelectorAll(".article").forEach(el => el.classList.remove("active"));
-            const target = document.getElementById(`article-${idx}`);
-            if (target) {
-              target.classList.add("active");
-              target.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-          });
+    async function fetchArticleMemory(articleUrl, title, pubDate) {
+      const res = await fetch(articleUrl);
+      const html = await res.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+
+      let description = "";
+      const metaDesc = doc.querySelector('meta[itemprop="description"]');
+      if (metaDesc && metaDesc.content) description = metaDesc.content.trim();
+
+      let image = "";
+      const thumb = doc.querySelector('meta[itemprop="thumbnailUrl"]');
+      if (thumb && thumb.content) image = thumb.content.trim();
+      if (!image) {
+        const imageMeta = doc.querySelector('meta[itemprop="image"]');
+        if (imageMeta && imageMeta.content) image = imageMeta.content.trim();
+      }
+
+      const selectors = [
+        "article .sqs-html-content",
+        ".blog-item-wrapper .sqs-html-content",
+        "main .sqs-html-content",
+        ".entry-content .sqs-html-content"
+      ];
+
+      let containerNodes = [];
+      for (const sel of selectors) {
+        containerNodes = Array.from(doc.querySelectorAll(sel));
+        if (containerNodes.length) break;
+      }
+
+      const blocks = [];
+      containerNodes.forEach((node) => {
+        node.querySelectorAll("p, h2, h3, h4, blockquote, ul, ol").forEach((el) => {
+          const txt = el.textContent.trim();
+          if (txt) blocks.push(cleanHtmlFragment(el.outerHTML));
+        });
+      });
+
+      let contentHtml = blocks.join("\\n").trim();
+      if (!contentHtml && description) {
+        contentHtml = `<p>${description}</p>`;
+      }
+
+      return {
+        url: articleUrl,
+        title: title,
+        display_date: parseDateText(pubDate),
+        excerpt: description,
+        image: image,
+        content_html: contentHtml
+      };
+    }
+
+    async function buildMemoryFromSitemap() {
+      const res = await fetch(NEWS_SITEMAP_URL);
+      const xmlText = await res.text();
+
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(xmlText, "application/xml");
+
+      const urlNodes = Array.from(xml.getElementsByTagName("url")).slice(0, 3);
+      const items = [];
+
+      for (const node of urlNodes) {
+        const loc = node.getElementsByTagName("loc")[0];
+        if (!loc || !loc.textContent.trim()) continue;
+
+        let title = "";
+        let pubDate = "";
+
+        Array.from(node.getElementsByTagName("*")).forEach((child) => {
+          const tag = child.tagName.toLowerCase();
+          if (tag.endsWith("title")) title = child.textContent.trim();
+          if (tag.endsWith("publication_date")) pubDate = child.textContent.trim();
         });
 
-        document.querySelectorAll("[data-back]").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            document.querySelectorAll(".article").forEach(el => el.classList.remove("active"));
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          });
+        items.push({
+          url: loc.textContent.trim(),
+          title,
+          publication_date: pubDate
         });
+      }
 
+      const articles = [];
+      for (const item of items) {
+        articles.push(await fetchArticleMemory(item.url, item.title, item.publication_date));
+      }
+
+      const payload = {
+        generated_at: new Date().toISOString(),
+        articles
+      };
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      return payload;
+    }
+
+    function loadStoredMemory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
       } catch (err) {
-        list.innerHTML = '<div class="empty">Memoria offline non disponibile.</div>';
+        return null;
+      }
+    }
+
+    function renderMemory(data) {
+      const list = document.getElementById("list");
+      const articleHost = document.getElementById("articleHost");
+      const articles = Array.isArray(data.articles) ? data.articles : [];
+
+      if (!articles.length) {
+        list.innerHTML = '<div class="empty">La memoria offline non è ancora disponibile.</div>';
+        articleHost.innerHTML = "";
+        return;
+      }
+
+      list.innerHTML = articles.map((article, idx) => `
+        <a href="#article-${idx}" class="card" data-article-index="${idx}">
+          <div class="hero">${article.image ? `<img src="${article.image}" alt="">` : ""}</div>
+          <div class="body">
+            <p class="date">${article.display_date || ""}</p>
+            <h2 class="title">${article.title || ""}</h2>
+            <p class="excerpt">${article.excerpt || ""}</p>
+          </div>
+        </a>
+      `).join("");
+
+      articleHost.innerHTML = articles.map((article, idx) => `
+        <article id="article-${idx}" class="article">
+          <p class="meta">${article.display_date || ""}</p>
+          <h2>${article.title || ""}</h2>
+          ${article.image ? `<img src="${article.image}" alt="">` : ""}
+          <div class="content">${article.content_html || ""}</div>
+          <div class="actions">
+            <button class="ghost" type="button" data-back="1">Torna all'elenco</button>
+          </div>
+        </article>
+      `).join("");
+
+      document.querySelectorAll("[data-article-index]").forEach((card) => {
+        card.addEventListener("click", (e) => {
+          e.preventDefault();
+          const idx = card.getAttribute("data-article-index");
+          document.querySelectorAll(".article").forEach(el => el.classList.remove("active"));
+          const target = document.getElementById(`article-${idx}`);
+          if (target) {
+            target.classList.add("active");
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-back]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".article").forEach(el => el.classList.remove("active"));
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+    }
+
+    async function initMemory() {
+      const stored = loadStoredMemory();
+
+      if (!navigator.onLine) {
+        renderMemory(stored || { articles: [] });
+        return;
+      }
+
+      try {
+        const fresh = await buildMemoryFromSitemap();
+        renderMemory(fresh);
+      } catch (err) {
+        renderMemory(stored || { articles: [] });
       }
     }
 
@@ -343,7 +486,7 @@
       }
     });
 
-    loadMemory();
+    initMemory();
   </script>
 </body>
 </html>
