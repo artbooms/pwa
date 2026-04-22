@@ -860,6 +860,11 @@
     }
 
     function goToMainSite() {
+      if (!navigator.onLine) {
+        window.location.href = "/memory.html";
+        return;
+      }
+
       window.location.href = "https://www.artbooms.com/";
     }
 
