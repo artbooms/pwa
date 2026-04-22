@@ -16,7 +16,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
-  <link rel="apple-touch-icon" href="/icons/icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
 
   <style>
     :root {
@@ -51,9 +51,6 @@
       color: var(--text);
     }
 
-    /* =========================
-       INLINE SMALL LOGO ONLY IN STEP 3
-       ========================= */
     .inline-app-logo {
       display: inline-flex;
       width: 18px;
@@ -236,7 +233,9 @@
     }
 
     .ios-chip {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       margin-left: 4px;
       padding: 1px 8px;
       border-radius: 999px;
@@ -245,6 +244,14 @@
       font-size: 0.86rem;
       color: #33485a;
       white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    .ios-chip svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      display: block;
     }
 
     .apple-bottom-bar {
@@ -653,7 +660,14 @@
             <span class="step-num">2.</span>
             <div class="step-content">
               Scorri in basso e tocca
-              <span class="ios-chip">Aggiungi alla schermata Home</span>
+              <span class="ios-chip">
+                Aggiungi alla schermata Home
+                <svg viewBox="0 0 24 24" fill="none" stroke="#6a7280" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+                  <path d="M12 8v8"></path>
+                  <path d="M8 12h8"></path>
+                </svg>
+              </span>
             </div>
           </li>
 
