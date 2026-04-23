@@ -1,4 +1,4 @@
-const CACHE_NAME = "artbooms-pwa-v6";
+const CACHE_NAME = "artbooms-pwa-v7";
 const APP_SHELL = [
   "/",
   "/memory.html",
