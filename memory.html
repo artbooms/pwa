@@ -285,12 +285,17 @@
 
   <script>
     const MEMORY_JSON_URL = "https://artbooms.github.io/artbooms-pwa-memory/memory-data.json";
-    const STORAGE_KEY = "artbooms-offline-memory-v2";
+    const STORAGE_KEY = "artbooms-offline-memory-v3";
 
-    function showOfflinePopup() {
+    function showOfflinePopup(force = false) {
+      if (!force && navigator.onLine) return;
       const popup = document.getElementById("offlinePopup");
       popup.classList.add("show");
       setTimeout(() => popup.classList.remove("show"), 3200);
+    }
+
+    function normalizeImage(url) {
+      return (url || "").replace(/^http:\/\//i, "https://");
     }
 
     function loadStoredMemory() {
@@ -309,10 +314,22 @@
       } catch (err) {}
     }
 
+    function normalizeArticles(data) {
+      const articles = Array.isArray(data?.articles) ? data.articles : [];
+      return {
+        ...data,
+        articles: articles.map((a) => ({
+          ...a,
+          image: normalizeImage(a.image || "")
+        }))
+      };
+    }
+
     function renderMemory(data) {
       const list = document.getElementById("list");
       const articleHost = document.getElementById("articleHost");
-      const articles = Array.isArray(data?.articles) ? data.articles : [];
+      const normalized = normalizeArticles(data);
+      const articles = normalized.articles;
 
       if (!articles.length) {
         list.innerHTML = '<div class="empty">La memoria offline non è ancora disponibile.</div>';
@@ -367,18 +384,14 @@
     async function initMemory() {
       const stored = loadStoredMemory();
 
-      if (!navigator.onLine) {
-        showOfflinePopup();
-        renderMemory(stored || { articles: [] });
-        return;
-      }
-
       try {
         const res = await fetch(MEMORY_JSON_URL, { cache: "no-store" });
         const fresh = await res.json();
-        saveMemory(fresh);
-        renderMemory(fresh);
+        const normalized = normalizeArticles(fresh);
+        saveMemory(normalized);
+        renderMemory(normalized);
       } catch (err) {
+        if (!navigator.onLine) showOfflinePopup(true);
         renderMemory(stored || { articles: [] });
       }
     }
