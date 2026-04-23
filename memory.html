@@ -71,14 +71,24 @@
       padding: 18px;
     }
 
-    .notice {
+    .offline-popup {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
       background: #ffffff;
       border: 1px solid var(--line);
-      border-radius: 18px;
+      border-radius: 16px;
       box-shadow: var(--shadow);
       padding: 14px 16px;
       line-height: 1.45;
-      margin-bottom: 18px;
+      z-index: 999;
+      width: min(92vw, 520px);
+      display: none;
+    }
+
+    .offline-popup.show {
+      display: block;
     }
 
     .header-row {
@@ -121,6 +131,7 @@
       border-radius: 22px;
       box-shadow: var(--shadow);
       overflow: hidden;
+      cursor: pointer;
     }
 
     .hero {
@@ -245,6 +256,10 @@
   </style>
 </head>
 <body>
+  <div id="offlinePopup" class="offline-popup">
+    <b>Sei offline.</b> Qui trovi una memoria essenziale della home di ARTBOOMS con gli ultimi tre articoli disponibili.
+  </div>
+
   <div class="top">
     <div class="brand">
       <img src="/images/artbooms-logo.webp" alt="ARTBOOMS">
@@ -259,10 +274,6 @@
   </div>
 
   <div class="wrap">
-    <div class="notice">
-      <b>Sei offline.</b> Qui trovi una memoria essenziale della home di ARTBOOMS con gli ultimi tre articoli disponibili.
-    </div>
-
     <div class="header-row">
       <h1>Ultimi articoli disponibili offline</h1>
       <button id="openSiteBtn" class="site-btn" type="button">Apri il sito appena torni online</button>
@@ -273,128 +284,13 @@
   </div>
 
   <script>
-    const NEWS_SITEMAP_URL = "https://artbooms-rss-x6pc.onrender.com/news-sitemap.xml";
-    const STORAGE_KEY = "artbooms-offline-memory-v1";
+    const MEMORY_JSON_URL = "https://artbooms.github.io/artbooms-pwa-memory/memory-data.json";
+    const STORAGE_KEY = "artbooms-offline-memory-v2";
 
-    function cleanHtmlFragment(fragmentHtml) {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(fragmentHtml, "text/html");
-      const allowed = new Set(["P", "H2", "H3", "H4", "BLOCKQUOTE", "UL", "OL", "LI", "STRONG", "EM", "BR"]);
-
-      doc.body.querySelectorAll("*").forEach((el) => {
-        if (!allowed.has(el.tagName)) {
-          const parent = el.parentNode;
-          while (el.firstChild) parent.insertBefore(el.firstChild, el);
-          parent.removeChild(el);
-          return;
-        }
-        [...el.attributes].forEach(attr => el.removeAttribute(attr.name));
-      });
-
-      return doc.body.innerHTML;
-    }
-
-    function parseDateText(pubDate) {
-      if (!pubDate) return "";
-      return pubDate.slice(0, 10);
-    }
-
-    async function fetchArticleMemory(articleUrl, title, pubDate) {
-      const res = await fetch(articleUrl);
-      const html = await res.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, "text/html");
-
-      let description = "";
-      const metaDesc = doc.querySelector('meta[itemprop="description"]');
-      if (metaDesc && metaDesc.content) description = metaDesc.content.trim();
-
-      let image = "";
-      const thumb = doc.querySelector('meta[itemprop="thumbnailUrl"]');
-      if (thumb && thumb.content) image = thumb.content.trim();
-      if (!image) {
-        const imageMeta = doc.querySelector('meta[itemprop="image"]');
-        if (imageMeta && imageMeta.content) image = imageMeta.content.trim();
-      }
-
-      const selectors = [
-        "article .sqs-html-content",
-        ".blog-item-wrapper .sqs-html-content",
-        "main .sqs-html-content",
-        ".entry-content .sqs-html-content"
-      ];
-
-      let containerNodes = [];
-      for (const sel of selectors) {
-        containerNodes = Array.from(doc.querySelectorAll(sel));
-        if (containerNodes.length) break;
-      }
-
-      const blocks = [];
-      containerNodes.forEach((node) => {
-        node.querySelectorAll("p, h2, h3, h4, blockquote, ul, ol").forEach((el) => {
-          const txt = el.textContent.trim();
-          if (txt) blocks.push(cleanHtmlFragment(el.outerHTML));
-        });
-      });
-
-      let contentHtml = blocks.join("\\n").trim();
-      if (!contentHtml && description) {
-        contentHtml = `<p>${description}</p>`;
-      }
-
-      return {
-        url: articleUrl,
-        title: title,
-        display_date: parseDateText(pubDate),
-        excerpt: description,
-        image: image,
-        content_html: contentHtml
-      };
-    }
-
-    async function buildMemoryFromSitemap() {
-      const res = await fetch(NEWS_SITEMAP_URL);
-      const xmlText = await res.text();
-
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(xmlText, "application/xml");
-
-      const urlNodes = Array.from(xml.getElementsByTagName("url")).slice(0, 3);
-      const items = [];
-
-      for (const node of urlNodes) {
-        const loc = node.getElementsByTagName("loc")[0];
-        if (!loc || !loc.textContent.trim()) continue;
-
-        let title = "";
-        let pubDate = "";
-
-        Array.from(node.getElementsByTagName("*")).forEach((child) => {
-          const tag = child.tagName.toLowerCase();
-          if (tag.endsWith("title")) title = child.textContent.trim();
-          if (tag.endsWith("publication_date")) pubDate = child.textContent.trim();
-        });
-
-        items.push({
-          url: loc.textContent.trim(),
-          title,
-          publication_date: pubDate
-        });
-      }
-
-      const articles = [];
-      for (const item of items) {
-        articles.push(await fetchArticleMemory(item.url, item.title, item.publication_date));
-      }
-
-      const payload = {
-        generated_at: new Date().toISOString(),
-        articles
-      };
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      return payload;
+    function showOfflinePopup() {
+      const popup = document.getElementById("offlinePopup");
+      popup.classList.add("show");
+      setTimeout(() => popup.classList.remove("show"), 3200);
     }
 
     function loadStoredMemory() {
@@ -407,10 +303,16 @@
       }
     }
 
+    function saveMemory(data) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (err) {}
+    }
+
     function renderMemory(data) {
       const list = document.getElementById("list");
       const articleHost = document.getElementById("articleHost");
-      const articles = Array.isArray(data.articles) ? data.articles : [];
+      const articles = Array.isArray(data?.articles) ? data.articles : [];
 
       if (!articles.length) {
         list.innerHTML = '<div class="empty">La memoria offline non è ancora disponibile.</div>';
@@ -466,12 +368,15 @@
       const stored = loadStoredMemory();
 
       if (!navigator.onLine) {
+        showOfflinePopup();
         renderMemory(stored || { articles: [] });
         return;
       }
 
       try {
-        const fresh = await buildMemoryFromSitemap();
+        const res = await fetch(MEMORY_JSON_URL, { cache: "no-store" });
+        const fresh = await res.json();
+        saveMemory(fresh);
         renderMemory(fresh);
       } catch (err) {
         renderMemory(stored || { articles: [] });
@@ -484,6 +389,10 @@
       } else {
         alert("Sei ancora offline.");
       }
+    });
+
+    window.addEventListener("online", () => {
+      window.location.href = "/";
     });
 
     initMemory();
