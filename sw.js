@@ -1,4 +1,4 @@
-const CACHE_NAME = "artbooms-pwa-v7";
+const CACHE_NAME = "artbooms-pwa-v8";
 const APP_SHELL = [
   "/",
   "/memory.html",
@@ -20,11 +20,15 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(
-      keys.map((key) => key !== CACHE_NAME ? caches.delete(key) : Promise.resolve())
-    );
+    await Promise.all(keys.map((key) => key !== CACHE_NAME ? caches.delete(key) : Promise.resolve()));
     await self.clients.claim();
   })());
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "CACHE_IMAGES" && Array.isArray(event.data.urls)) {
+    event.waitUntil(cacheImages(event.data.urls));
+  }
 });
 
 self.addEventListener("fetch", (event) => {
@@ -76,9 +80,7 @@ async function cacheFirst(request) {
   if (cached) return cached;
 
   const fresh = await fetch(request);
-  if (fresh && fresh.ok) {
-    cache.put(request, fresh.clone());
-  }
+  if (fresh && fresh.ok) cache.put(request, fresh.clone());
   return fresh;
 }
 
@@ -94,4 +96,17 @@ async function imageStrategy(request) {
   } catch (err) {
     return cached || Response.error();
   }
+}
+
+async function cacheImages(urls) {
+  const cache = await caches.open(CACHE_NAME);
+  await Promise.all(
+    urls.filter(Boolean).map(async (url) => {
+      try {
+        const req = new Request(url, { mode: "no-cors" });
+        const res = await fetch(req);
+        await cache.put(req, res.clone());
+      } catch (err) {}
+    })
+  );
 }
