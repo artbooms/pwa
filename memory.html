@@ -12,297 +12,343 @@
 
   <style>
     :root {
-      --bg: #f3f3f3;
-      --text: #193042;
-      --muted: #6e7b88;
-      --line: #e8e8e8;
-      --card: #ffffff;
-      --shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-      --black: #000000;
-      --white: #ffffff;
+      --bg: #ffffff;
+      --text: #222222;
+      --muted: #777777;
+      --line: #eeeeee;
+      --popup-bg: #ffffff;
+      --popup-shadow: 0 10px 28px rgba(0,0,0,0.14);
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
     }
 
-    .top {
-      background: #ffffff;
-      border-bottom: 1px solid var(--line);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .brand {
-      text-align: center;
-      padding: 18px 18px 10px;
-    }
-
-    .brand img {
-      width: min(78%, 290px);
-      height: auto;
-      display: inline-block;
-    }
-
-    .menu {
-      display: flex;
+    .ab-offline-popup-wrap {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
       justify-content: center;
-      gap: 18px;
-      flex-wrap: wrap;
-      padding: 0 18px 14px;
-      font-size: 0.92rem;
-      color: var(--muted);
-    }
-
-    .menu span {
-      opacity: 0.9;
+      align-items: flex-start;
       pointer-events: none;
-    }
-
-    .wrap {
-      max-width: 860px;
-      margin: 0 auto;
       padding: 18px;
     }
 
-    .offline-popup {
-      position: fixed;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ffffff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      padding: 14px 16px;
-      line-height: 1.45;
-      z-index: 999;
-      width: min(92vw, 520px);
-      display: none;
-    }
-
-    .offline-popup.show {
-      display: block;
-    }
-
-    .header-row {
+    .ab-offline-popup-wrap.show {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
     }
 
-    .header-row h1 {
+    .ab-offline-popup {
+      width: min(92vw, 520px);
+      background: var(--popup-bg);
+      color: #000;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--popup-shadow);
+      padding: 16px 18px;
+      font-size: 1rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .site-shell {
+      width: 100%;
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 0 28px 60px;
+    }
+
+    .site-header {
+      padding: 62px 0 34px;
+      text-align: center;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 44px;
+    }
+
+    .site-logo {
+      display: block;
+      width: min(460px, 82vw);
+      height: auto;
+      margin: 0 auto 24px;
+    }
+
+    .tagline {
       margin: 0;
-      font-size: 1.18rem;
+      color: #777;
+      font-family: "Arial Narrow", Arial, Helvetica, sans-serif;
+      font-size: clamp(1.55rem, 3.4vw, 2.45rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .offline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 68px;
+    }
+
+    .home-article {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 54px;
+    }
+
+    .home-article:last-child {
+      border-bottom: none;
+    }
+
+    .home-article-title {
+      margin: 0 0 24px;
+      color: #222;
+      font-family: "Arial Narrow", "Helvetica Neue Condensed", Arial, Helvetica, sans-serif;
+      font-size: clamp(3rem, 7.5vw, 5.9rem);
+      font-stretch: condensed;
+      font-weight: 700;
+      line-height: 1.16;
+      letter-spacing: -0.02em;
+      cursor: pointer;
+    }
+
+    .home-article-date {
+      margin: 0 0 34px;
+      color: #777;
+      font-size: clamp(1.4rem, 3.2vw, 2.35rem);
       line-height: 1.2;
     }
 
-    .site-btn {
-      border: none;
-      border-radius: 999px;
-      background: var(--black);
-      color: var(--white);
-      padding: 11px 16px;
-      font: inherit;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .card {
+    .home-article-image {
       display: block;
-      text-decoration: none;
-      color: inherit;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      cursor: pointer;
-    }
-
-    .hero {
-      aspect-ratio: 16 / 9;
-      background: #e9ecef;
-    }
-
-    .hero img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .body {
-      padding: 16px 18px;
-    }
-
-    .date {
-      margin: 0 0 8px;
-      font-size: 0.86rem;
-      color: var(--muted);
-    }
-
-    .title {
-      margin: 0 0 10px;
-      font-size: 1.18rem;
-      line-height: 1.25;
-    }
-
-    .excerpt {
-      margin: 0;
-      color: #304659;
-      line-height: 1.5;
-    }
-
-    .article {
-      display: none;
-      margin-top: 18px;
-      background: #ffffff;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
-
-    .article.active {
-      display: block;
-    }
-
-    .article .meta {
-      margin: 0 0 10px;
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-
-    .article h2 {
-      margin: 0 0 12px;
-      font-size: 1.42rem;
-      line-height: 1.25;
-    }
-
-    .article img {
-      max-width: 100%;
       height: auto;
-      display: block;
-      border-radius: 14px;
-      margin: 0 0 14px;
-    }
-
-    .article .content p,
-    .article .content h3,
-    .article .content h4,
-    .article .content blockquote,
-    .article .content ul,
-    .article .content ol {
-      margin: 0 0 14px;
-      line-height: 1.6;
-    }
-
-    .article .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    .ghost {
-      border: 1px solid #d9dde2;
-      background: #ffffff;
-      color: var(--text);
-      border-radius: 999px;
-      padding: 11px 16px;
-      font: inherit;
-      font-weight: 600;
+      margin: 0 0 26px;
       cursor: pointer;
+    }
+
+    .home-article-excerpt {
+      margin: 0;
+      color: #333;
+      font-size: 1.05rem;
+      line-height: 1.65;
+      max-width: 820px;
+    }
+
+    .article-view {
+      display: none;
+      padding-bottom: 80px;
+    }
+
+    .article-view.active {
+      display: block;
+    }
+
+    .article-title {
+      margin: 0 0 24px;
+      color: #222;
+      font-family: "Arial Narrow", "Helvetica Neue Condensed", Arial, Helvetica, sans-serif;
+      font-size: clamp(3rem, 7.5vw, 5.9rem);
+      font-weight: 700;
+      line-height: 1.16;
+      letter-spacing: -0.02em;
+    }
+
+    .article-date {
+      margin: 0 0 34px;
+      color: #777;
+      font-size: clamp(1.4rem, 3.2vw, 2.35rem);
+    }
+
+    .article-main-image,
+    .article-content img {
+      display: block;
+      width: 100%;
+      height: auto;
+      margin: 0 0 28px;
+    }
+
+    .article-content {
+      color: #222;
+      font-size: 1.08rem;
+      line-height: 1.75;
+      max-width: 860px;
+    }
+
+    .article-content p,
+    .article-content blockquote,
+    .article-content ul,
+    .article-content ol,
+    .article-content figure {
+      margin: 0 0 22px;
+    }
+
+    .article-content h2,
+    .article-content h3,
+    .article-content h4 {
+      margin: 34px 0 18px;
+      font-family: "Arial Narrow", Arial, Helvetica, sans-serif;
+      font-size: clamp(1.65rem, 4.2vw, 2.5rem);
+      line-height: 1.22;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .article-content figcaption {
+      margin-top: -16px;
+      margin-bottom: 24px;
+      color: #777;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .article-content blockquote {
+      border-left: 3px solid #ddd;
+      padding-left: 18px;
+      color: #444;
+    }
+
+    .back-button {
+      display: inline-block;
+      border: 1px solid #ddd;
+      background: #fff;
+      color: #222;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 26px 0 0;
     }
 
     .empty {
-      background: #ffffff;
       border: 1px solid var(--line);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      padding: 18px;
-      color: var(--muted);
+      padding: 22px;
+      color: #777;
+      text-align: center;
     }
 
-    @media (max-width: 640px) {
-      .header-row {
-        flex-direction: column;
-        align-items: flex-start;
+    @media (max-width: 700px) {
+      .site-shell {
+        padding: 0 40px 46px;
       }
 
-      .title {
-        font-size: 1.08rem;
+      .site-header {
+        padding: 70px 0 30px;
+        margin-bottom: 42px;
       }
 
-      .article h2 {
-        font-size: 1.2rem;
+      .site-logo {
+        width: min(340px, 76vw);
+        margin-bottom: 22px;
+      }
+
+      .offline-list {
+        gap: 58px;
+      }
+
+      .home-article {
+        padding-bottom: 48px;
+      }
+
+      .home-article-title,
+      .article-title {
+        font-size: clamp(3.15rem, 11vw, 4.75rem);
+        line-height: 1.16;
+      }
+
+      .home-article-date,
+      .article-date {
+        font-size: clamp(1.55rem, 6vw, 2.15rem);
+        margin-bottom: 34px;
+      }
+
+      .home-article-excerpt,
+      .article-content {
+        font-size: 1.02rem;
+      }
+    }
+
+    @media (min-width: 900px) {
+      .site-shell {
+        max-width: 980px;
+      }
+
+      .home-article-title,
+      .article-title {
+        font-size: 4.8rem;
       }
     }
   </style>
 </head>
 <body>
-  <div id="offlinePopup" class="offline-popup">
-    <b>Sei offline.</b> Qui trovi una memoria essenziale della home di ARTBOOMS con gli ultimi tre articoli disponibili.
-  </div>
-
-  <div class="top">
-    <div class="brand">
-      <img src="/images/artbooms-logo.webp" alt="ARTBOOMS">
-    </div>
-    <div class="menu">
-      <span>home</span>
-      <span>arte</span>
-      <span>design</span>
-      <span>fotografia</span>
-      <span>chi siamo</span>
+  <div id="offlinePopupWrap" class="ab-offline-popup-wrap">
+    <div class="ab-offline-popup">
+      <strong>Sei Offline!</strong><br>
+      Ci vediamo più tardi per una navigazione approfondita.
     </div>
   </div>
 
-  <div class="wrap">
-    <div class="header-row">
-      <h1>Ultimi articoli disponibili offline</h1>
-      <button id="openSiteBtn" class="site-btn" type="button">Apri il sito appena torni online</button>
-    </div>
+  <main class="site-shell">
+    <header class="site-header">
+      <img class="site-logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS">
+      <p class="tagline">MAGAZINE D'ARTE CONTEMPORANEA</p>
+    </header>
 
-    <div id="list" class="list"></div>
-    <div id="articleHost"></div>
-  </div>
+    <section id="homeView">
+      <div id="articleList" class="offline-list"></div>
+    </section>
+
+    <section id="articleView" class="article-view"></section>
+  </main>
 
   <script>
     const MEMORY_JSON_URL = "https://artbooms.github.io/artbooms-pwa-memory/memory-data.json";
-    const STORAGE_KEY = "artbooms-offline-memory-v3";
+    const STORAGE_KEY = "artbooms-offline-memory-v5";
 
-    function showOfflinePopup(force = false) {
-      if (!force && navigator.onLine) return;
-      const popup = document.getElementById("offlinePopup");
-      popup.classList.add("show");
-      setTimeout(() => popup.classList.remove("show"), 3200);
+    function showOfflinePopup() {
+      const wrap = document.getElementById("offlinePopupWrap");
+      wrap.classList.add("show");
+      setTimeout(() => wrap.classList.remove("show"), 3200);
     }
 
     function normalizeImage(url) {
       return (url || "").replace(/^http:\/\//i, "https://");
     }
 
+    function collectImageUrls(data) {
+      const urls = [];
+      const articles = Array.isArray(data?.articles) ? data.articles : [];
+
+      articles.forEach((article) => {
+        if (article.image) urls.push(normalizeImage(article.image));
+        if (Array.isArray(article.images)) {
+          article.images.forEach((u) => urls.push(normalizeImage(u)));
+        }
+
+        const html = article.content_html || "";
+        const matches = html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi);
+        for (const match of matches) urls.push(normalizeImage(match[1]));
+      });
+
+      return [...new Set(urls.filter(Boolean))];
+    }
+
+    function askServiceWorkerToCacheImages(data) {
+      if (!navigator.serviceWorker || !navigator.serviceWorker.controller) return;
+      navigator.serviceWorker.controller.postMessage({
+        type: "CACHE_IMAGES",
+        urls: collectImageUrls(data)
+      });
+    }
+
     function loadStoredMemory() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return null;
-        return JSON.parse(raw);
+        return raw ? JSON.parse(raw) : null;
       } catch (err) {
         return null;
       }
@@ -314,69 +360,66 @@
       } catch (err) {}
     }
 
-    function normalizeArticles(data) {
+    function normalizeData(data) {
       const articles = Array.isArray(data?.articles) ? data.articles : [];
       return {
         ...data,
-        articles: articles.map((a) => ({
-          ...a,
-          image: normalizeImage(a.image || "")
+        articles: articles.map((article) => ({
+          ...article,
+          image: normalizeImage(article.image || ""),
+          images: Array.isArray(article.images) ? article.images.map(normalizeImage) : []
         }))
       };
     }
 
-    function renderMemory(data) {
-      const list = document.getElementById("list");
-      const articleHost = document.getElementById("articleHost");
-      const normalized = normalizeArticles(data);
+    function showHome() {
+      document.getElementById("homeView").style.display = "block";
+      document.getElementById("articleView").classList.remove("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openArticle(article, index) {
+      const home = document.getElementById("homeView");
+      const view = document.getElementById("articleView");
+
+      home.style.display = "none";
+      view.innerHTML = `
+        <article>
+          <h1 class="article-title">${article.title || ""}</h1>
+          <p class="article-date">${article.display_date || ""}</p>
+          ${article.image ? `<img class="article-main-image" src="${article.image}" alt="">` : ""}
+          <div class="article-content">${article.content_html || ""}</div>
+          <button class="back-button" type="button" id="backButton">Torna alla home</button>
+        </article>
+      `;
+      view.classList.add("active");
+      document.getElementById("backButton").addEventListener("click", showHome);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderHome(data) {
+      const list = document.getElementById("articleList");
+      const normalized = normalizeData(data);
       const articles = normalized.articles;
 
       if (!articles.length) {
-        list.innerHTML = '<div class="empty">La memoria offline non è ancora disponibile.</div>';
-        articleHost.innerHTML = "";
+        list.innerHTML = '<div class="empty">La memoria offline non è ancora disponibile. Apri la PWA online almeno una volta.</div>';
         return;
       }
 
-      list.innerHTML = articles.map((article, idx) => `
-        <a href="#article-${idx}" class="card" data-article-index="${idx}">
-          <div class="hero">${article.image ? `<img src="${article.image}" alt="">` : ""}</div>
-          <div class="body">
-            <p class="date">${article.display_date || ""}</p>
-            <h2 class="title">${article.title || ""}</h2>
-            <p class="excerpt">${article.excerpt || ""}</p>
-          </div>
-        </a>
-      `).join("");
-
-      articleHost.innerHTML = articles.map((article, idx) => `
-        <article id="article-${idx}" class="article">
-          <p class="meta">${article.display_date || ""}</p>
-          <h2>${article.title || ""}</h2>
-          ${article.image ? `<img src="${article.image}" alt="">` : ""}
-          <div class="content">${article.content_html || ""}</div>
-          <div class="actions">
-            <button class="ghost" type="button" data-back="1">Torna all'elenco</button>
-          </div>
+      list.innerHTML = articles.map((article, index) => `
+        <article class="home-article" data-index="${index}">
+          <h1 class="home-article-title">${article.title || ""}</h1>
+          <p class="home-article-date">${article.display_date || ""}</p>
+          ${article.image ? `<img class="home-article-image" src="${article.image}" alt="">` : ""}
+          ${article.excerpt ? `<p class="home-article-excerpt">${article.excerpt}</p>` : ""}
         </article>
       `).join("");
 
-      document.querySelectorAll("[data-article-index]").forEach((card) => {
-        card.addEventListener("click", (e) => {
-          e.preventDefault();
-          const idx = card.getAttribute("data-article-index");
-          document.querySelectorAll(".article").forEach(el => el.classList.remove("active"));
-          const target = document.getElementById(`article-${idx}`);
-          if (target) {
-            target.classList.add("active");
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        });
-      });
-
-      document.querySelectorAll("[data-back]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".article").forEach(el => el.classList.remove("active"));
-          window.scrollTo({ top: 0, behavior: "smooth" });
+      document.querySelectorAll(".home-article").forEach((node) => {
+        node.addEventListener("click", () => {
+          const index = Number(node.getAttribute("data-index"));
+          openArticle(articles[index], index);
         });
       });
     }
@@ -384,25 +427,22 @@
     async function initMemory() {
       const stored = loadStoredMemory();
 
+      if (!navigator.onLine) {
+        showOfflinePopup();
+        renderHome(stored || { articles: [] });
+        return;
+      }
+
       try {
-        const res = await fetch(MEMORY_JSON_URL, { cache: "no-store" });
-        const fresh = await res.json();
-        const normalized = normalizeArticles(fresh);
-        saveMemory(normalized);
-        renderMemory(normalized);
+        const response = await fetch(MEMORY_JSON_URL, { cache: "no-store" });
+        const fresh = normalizeData(await response.json());
+        saveMemory(fresh);
+        renderHome(fresh);
+        askServiceWorkerToCacheImages(fresh);
       } catch (err) {
-        if (!navigator.onLine) showOfflinePopup(true);
-        renderMemory(stored || { articles: [] });
+        renderHome(stored || { articles: [] });
       }
     }
-
-    document.getElementById("openSiteBtn").addEventListener("click", () => {
-      if (navigator.onLine) {
-        window.location.href = "https://www.artbooms.com/";
-      } else {
-        alert("Sei ancora offline.");
-      }
-    });
 
     window.addEventListener("online", () => {
       window.location.href = "/";
