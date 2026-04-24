@@ -6,7 +6,6 @@ const APP_SHELL = [
   "/icons/icon-180.png",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
-  "/icons/apple-touch-icon.png",
   "/images/artbooms-logo.webp"
 ];
 
