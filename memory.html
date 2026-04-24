@@ -107,9 +107,8 @@
     .home-article-title {
       margin: 0 0 24px;
       color: #222;
-      font-family: "Arial Narrow", "Helvetica Neue Condensed", Arial, Helvetica, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: clamp(3rem, 7.5vw, 5.9rem);
-      font-stretch: condensed;
       font-weight: 700;
       line-height: 1.16;
       letter-spacing: -0.02em;
@@ -151,7 +150,7 @@
     .article-title {
       margin: 0 0 24px;
       color: #222;
-      font-family: "Arial Narrow", "Helvetica Neue Condensed", Arial, Helvetica, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: clamp(3rem, 7.5vw, 5.9rem);
       font-weight: 700;
       line-height: 1.16;
@@ -321,20 +320,6 @@
       return (url || "").replace(/^http:\/\//i, "https://");
     }
 
-    function contentStartsWithLeadImage(article) {
-      if (!article || !article.image || !article.content_html) return false;
-
-      const wrapper = document.createElement("div");
-      wrapper.innerHTML = article.content_html;
-
-      const firstImage = wrapper.querySelector("img");
-      if (!firstImage) return false;
-
-      const clean = (url) => normalizeImage(url || "").split("?")[0];
-
-      return clean(firstImage.getAttribute("src")) === clean(article.image);
-    }
-
     function collectImageUrls(data) {
       const urls = [];
       const articles = Array.isArray(data?.articles) ? data.articles : [];
@@ -403,7 +388,6 @@
         <article>
           <h1 class="article-title">${article.title || ""}</h1>
           <p class="article-date">${article.display_date || ""}</p>
-          ${article.image && !contentStartsWithLeadImage(article) ? `<img class="article-main-image" src="${article.image}" alt="">` : ""}
           <div class="article-content">${article.content_html || ""}</div>
           <button class="back-button" type="button" id="backButton">Torna alla home</button>
         </article>
