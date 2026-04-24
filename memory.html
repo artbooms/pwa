@@ -76,6 +76,7 @@
       width: min(460px, 82vw);
       height: auto;
       margin: 0 auto 24px;
+      cursor: pointer;
     }
 
     .tagline {
@@ -189,12 +190,11 @@
     .article-content h2,
     .article-content h3,
     .article-content h4 {
-      margin: 34px 0 18px;
-      font-family: "Arial Narrow", Arial, Helvetica, sans-serif;
-      font-size: clamp(1.65rem, 4.2vw, 2.5rem);
-      line-height: 1.22;
-      font-weight: 700;
-      letter-spacing: -0.01em;
+      margin: 0 0 22px;
+      font: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      letter-spacing: inherit;
     }
 
     .article-content figcaption {
@@ -287,14 +287,16 @@
 <body>
   <div id="offlinePopupWrap" class="ab-offline-popup-wrap">
     <div class="ab-offline-popup">
-      <strong>Sei Offline!</strong><br>
-      Ci vediamo più tardi per una navigazione approfondita.
+      <strong>Sei Offline</strong><br>
+      A presto<br>
+      per una navigazione<br>
+      più approfondita
     </div>
   </div>
 
   <main class="site-shell">
     <header class="site-header">
-      <img class="site-logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS">
+      <img id="siteLogo" class="site-logo" src="/images/artbooms-logo.webp" alt="ARTBOOMS">
       <p class="tagline">MAGAZINE D'ARTE CONTEMPORANEA</p>
     </header>
 
@@ -317,6 +319,20 @@
 
     function normalizeImage(url) {
       return (url || "").replace(/^http:\/\//i, "https://");
+    }
+
+    function contentStartsWithLeadImage(article) {
+      if (!article || !article.image || !article.content_html) return false;
+
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = article.content_html;
+
+      const firstImage = wrapper.querySelector("img");
+      if (!firstImage) return false;
+
+      const clean = (url) => normalizeImage(url || "").split("?")[0];
+
+      return clean(firstImage.getAttribute("src")) === clean(article.image);
     }
 
     function collectImageUrls(data) {
@@ -387,7 +403,7 @@
         <article>
           <h1 class="article-title">${article.title || ""}</h1>
           <p class="article-date">${article.display_date || ""}</p>
-          ${article.image ? `<img class="article-main-image" src="${article.image}" alt="">` : ""}
+          ${article.image && !contentStartsWithLeadImage(article) ? `<img class="article-main-image" src="${article.image}" alt="">` : ""}
           <div class="article-content">${article.content_html || ""}</div>
           <button class="back-button" type="button" id="backButton">Torna alla home</button>
         </article>
@@ -447,6 +463,10 @@
     window.addEventListener("online", () => {
       window.location.href = "/";
     });
+
+    document.getElementById("siteLogo").addEventListener("click", showHome);
+
+    window.addEventListener("offline", showOfflinePopup);
 
     initMemory();
   </script>
