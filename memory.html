@@ -308,16 +308,64 @@
 
   <script>
     const MEMORY_JSON_URL = "https://artbooms.github.io/artbooms-pwa-memory/memory-data.json";
-    const STORAGE_KEY = "artbooms-offline-memory-v8";
+    const STORAGE_KEY = "artbooms-offline-memory-v9";
+
+    let wasOnline = navigator.onLine;
+    let offlinePopupTimer = null;
 
     function showOfflinePopup() {
       const wrap = document.getElementById("offlinePopupWrap");
+      if (!wrap) return;
+
       wrap.classList.add("show");
-      setTimeout(() => wrap.classList.remove("show"), 3200);
+
+      if (offlinePopupTimer) {
+        clearTimeout(offlinePopupTimer);
+      }
+
+      offlinePopupTimer = setTimeout(() => {
+        wrap.classList.remove("show");
+      }, 3600);
     }
 
     function normalizeImage(url) {
       return (url || "").replace(/^http:\/\//i, "https://");
+    }
+
+    function imageFileKey(url) {
+      const clean = normalizeImage(url || "").split("?")[0];
+      return decodeURIComponent(clean).split("/").pop().toLowerCase();
+    }
+
+    function articleContentHasImages(article) {
+      return /<img[\s>]/i.test(article?.content_html || "");
+    }
+
+    function renderArticleImageFallback(article) {
+      if (articleContentHasImages(article)) return "";
+
+      const urls = [];
+      const seen = new Set();
+
+      if (article.image) {
+        urls.push(article.image);
+      }
+
+      if (Array.isArray(article.images)) {
+        article.images.forEach((url) => urls.push(url));
+      }
+
+      return urls
+        .map(normalizeImage)
+        .filter(Boolean)
+        .filter((url) => {
+          const key = imageFileKey(url);
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .map((url) => `<figure><img src="${url}" alt=""></figure>`)
+        .join("");
     }
 
     function collectImageUrls(data) {
@@ -326,24 +374,50 @@
 
       articles.forEach((article) => {
         if (article.image) urls.push(normalizeImage(article.image));
+
         if (Array.isArray(article.images)) {
           article.images.forEach((u) => urls.push(normalizeImage(u)));
         }
 
         const html = article.content_html || "";
         const matches = html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi);
-        for (const match of matches) urls.push(normalizeImage(match[1]));
+
+        for (const match of matches) {
+          urls.push(normalizeImage(match[1]));
+        }
       });
 
-      return [...new Set(urls.filter(Boolean))];
+      const seen = new Set();
+
+      return urls
+        .filter(Boolean)
+        .filter((url) => {
+          const key = imageFileKey(url);
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
     }
 
-    function askServiceWorkerToCacheImages(data) {
-      if (!navigator.serviceWorker || !navigator.serviceWorker.controller) return;
-      navigator.serviceWorker.controller.postMessage({
+    async function askServiceWorkerToCacheImages(data) {
+      if (!navigator.serviceWorker) return;
+
+      const payload = {
         type: "CACHE_IMAGES",
         urls: collectImageUrls(data)
-      });
+      };
+
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage(payload);
+        return;
+      }
+
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        if (registration && registration.active) {
+          registration.active.postMessage(payload);
+        }
+      } catch (err) {}
     }
 
     function loadStoredMemory() {
@@ -363,6 +437,7 @@
 
     function normalizeData(data) {
       const articles = Array.isArray(data?.articles) ? data.articles : [];
+
       return {
         ...data,
         articles: articles.map((article) => ({
@@ -388,7 +463,10 @@
         <article>
           <h1 class="article-title">${article.title || ""}</h1>
           <p class="article-date">${article.display_date || ""}</p>
-          <div class="article-content">${article.content_html || ""}</div>
+          <div class="article-content">
+            ${renderArticleImageFallback(article)}
+            ${article.content_html || ""}
+          </div>
           <button class="back-button" type="button" id="backButton">Torna alla home</button>
         </article>
       `;
@@ -435,22 +513,47 @@
 
       try {
         const response = await fetch(MEMORY_JSON_URL, { cache: "no-store" });
+        if (!response.ok) throw new Error("memory fetch failed");
+
         const fresh = normalizeData(await response.json());
         saveMemory(fresh);
         renderHome(fresh);
         askServiceWorkerToCacheImages(fresh);
       } catch (err) {
+        showOfflinePopup();
         renderHome(stored || { articles: [] });
       }
     }
 
+    function checkOfflineState() {
+      const isOnline = navigator.onLine;
+
+      if (wasOnline && !isOnline) {
+        showOfflinePopup();
+      }
+
+      wasOnline = isOnline;
+    }
+
     window.addEventListener("online", () => {
+      wasOnline = true;
       window.location.href = "/";
     });
 
-    document.getElementById("siteLogo").addEventListener("click", showHome);
+    window.addEventListener("offline", () => {
+      wasOnline = false;
+      showOfflinePopup();
+    });
 
-    window.addEventListener("offline", showOfflinePopup);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && !navigator.onLine) {
+        showOfflinePopup();
+      }
+    });
+
+    setInterval(checkOfflineState, 2500);
+
+    document.getElementById("siteLogo").addEventListener("click", showHome);
 
     initMemory();
   </script>
