@@ -18,6 +18,28 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
 
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "5e419b44-dbb3-4af3-ae22-e921c52aa02f",
+        safari_web_id: "web.onesignal.auto.516349e1-446e-4cea-8b68-2396bd3ac49a",
+        notifyButton: {
+          enable: false
+        },
+        welcomeNotification: {
+          disable: true
+        },
+        autoResubscribe: true,
+        serviceWorkerPath: "push/onesignal/OneSignalSDKWorker.js",
+        serviceWorkerParam: {
+          scope: "/push/onesignal/"
+        }
+      });
+    });
+  </script>
+
   <style>
     :root {
       --bg: #f3f3f3;
@@ -700,8 +722,7 @@
       </div>
     </div>
   </section>
-
-  <section id="macGuide">
+    <section id="macGuide">
     <div class="mac-guide-card">
       <div class="mac-guide-header">
         <span>Installa l'app</span>
@@ -816,9 +837,9 @@
             <span class="pill-arrow" aria-hidden="true">›</span>
           </button>
 
-          <button id="notifyButton" class="pill-button secondary" type="button" aria-live="polite">
+          <button id="notifyButton" class="pill-button secondary" type="button" aria-live="polite" aria-pressed="false">
             <span class="pill-left">
-              <svg class="bell-icon" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <svg id="notifyBellIcon" class="bell-icon" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M15 18H9"></path>
                 <path d="M18 16v-5a6 6 0 1 0-12 0v5l-2 2h16l-2-2Z"></path>
                 <path d="M10.5 20a1.5 1.5 0 0 0 3 0"></path>
@@ -837,6 +858,8 @@
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(console.error);
     }
+
+    const NOTIFICATION_STORAGE_KEY = "artbooms-notifications-active";
 
     let deferredPrompt = null;
     let installAttemptFinished = false;
@@ -868,30 +891,136 @@
       window.location.href = "https://www.artbooms.com/";
     }
 
-    function updateNotificationLabel() {
+    function setNotificationButtonActive(active) {
       const label = document.getElementById("notifyLabel");
-      if (!label) return;
+      const button = document.getElementById("notifyButton");
+      const bell = document.getElementById("notifyBellIcon");
 
-      if (!("Notification" in window)) {
-        label.textContent = "Attiva notifiche";
-        return;
+      if (label) {
+        label.textContent = active ? "Notifiche attivate" : "Attiva notifiche";
       }
 
-      label.textContent = Notification.permission === "granted"
-        ? "Notifiche abilitate"
-        : "Attiva notifiche";
+      if (button) {
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      }
+
+      if (bell) {
+        bell.setAttribute("stroke", "#000000");
+      }
+
+      try {
+        localStorage.setItem(NOTIFICATION_STORAGE_KEY, active ? "1" : "0");
+      } catch (err) {}
+    }
+
+    function updateNotificationLabel() {
+      let savedActive = false;
+
+      try {
+        savedActive = localStorage.getItem(NOTIFICATION_STORAGE_KEY) === "1";
+      } catch (err) {}
+
+      setNotificationButtonActive(savedActive);
+
+      if (!window.OneSignalDeferred) return;
+
+      OneSignalDeferred.push(function(OneSignal) {
+        let active = false;
+
+        try {
+          active = !!(
+            OneSignal.Notifications &&
+            OneSignal.Notifications.permission &&
+            OneSignal.User &&
+            OneSignal.User.PushSubscription &&
+            OneSignal.User.PushSubscription.optedIn
+          );
+        } catch (err) {
+          active = savedActive;
+        }
+
+        setNotificationButtonActive(active);
+      });
     }
 
     async function requestNotificationPermission() {
-      if (!("Notification" in window)) return "unsupported";
-      if (Notification.permission === "granted") return "granted";
+      if (!window.OneSignalDeferred) return "unsupported";
 
-      try {
-        return await Notification.requestPermission();
-      } catch (err) {
-        console.error(err);
-        return "error";
-      }
+      return new Promise((resolve) => {
+        OneSignalDeferred.push(async function(OneSignal) {
+          try {
+            if (
+              !OneSignal.Notifications ||
+              typeof OneSignal.Notifications.isPushSupported !== "function" ||
+              !OneSignal.Notifications.isPushSupported()
+            ) {
+              setNotificationButtonActive(false);
+              resolve("unsupported");
+              return;
+            }
+
+            if (!OneSignal.Notifications.permission) {
+              await OneSignal.Notifications.requestPermission();
+            }
+
+            if (
+              OneSignal.Notifications.permission &&
+              OneSignal.User &&
+              OneSignal.User.PushSubscription &&
+              typeof OneSignal.User.PushSubscription.optIn === "function"
+            ) {
+              await OneSignal.User.PushSubscription.optIn();
+            }
+
+            const active = !!(
+              OneSignal.Notifications.permission &&
+              OneSignal.User &&
+              OneSignal.User.PushSubscription &&
+              OneSignal.User.PushSubscription.optedIn
+            );
+
+            setNotificationButtonActive(active);
+            resolve(active ? "granted" : "default");
+          } catch (err) {
+            console.error(err);
+            resolve("error");
+          }
+        });
+      });
+    }
+
+    function attachOneSignalObservers() {
+      if (!window.OneSignalDeferred) return;
+
+      OneSignalDeferred.push(function(OneSignal) {
+        try {
+          if (
+            OneSignal.User &&
+            OneSignal.User.PushSubscription &&
+            typeof OneSignal.User.PushSubscription.addEventListener === "function"
+          ) {
+            OneSignal.User.PushSubscription.addEventListener("change", function(event) {
+              const active = !!(event && event.current && event.current.optedIn);
+              setNotificationButtonActive(active);
+            });
+          }
+
+          if (
+            OneSignal.Notifications &&
+            typeof OneSignal.Notifications.addEventListener === "function"
+          ) {
+            OneSignal.Notifications.addEventListener("permissionChange", function(permission) {
+              const active = !!(
+                permission &&
+                OneSignal.User &&
+                OneSignal.User.PushSubscription &&
+                OneSignal.User.PushSubscription.optedIn
+              );
+              setNotificationButtonActive(active);
+            });
+          }
+        } catch (err) {}
+      });
     }
 
     function showSection(sectionId) {
@@ -963,6 +1092,7 @@
       const openSiteButton = document.getElementById("openSiteButton");
 
       updateNotificationLabel();
+      attachOneSignalObservers();
 
       if (!installed && appleInstallRequested && appleMobile) {
         showSection("appleGuide");
