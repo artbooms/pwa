@@ -437,8 +437,7 @@
       height: 22px;
       flex-shrink: 0;
     }
-
-    /* =========================
+        /* =========================
        MAIN LAUNCHER
        ========================= */
     #mainLauncher {
@@ -722,7 +721,8 @@
       </div>
     </div>
   </section>
-    <section id="macGuide">
+
+  <section id="macGuide">
     <div class="mac-guide-card">
       <div class="mac-guide-header">
         <span>Installa l'app</span>
@@ -796,8 +796,7 @@
       <p class="fallback-text">
         Il browser attuale non supporta l’installazione automatica. Apri questa pagina in <b>Chrome</b> o <b>Edge</b> per continuare.
       </p>
-
-      <div class="fallback-actions">
+            <div class="fallback-actions">
         <button id="copyLinkButton" class="fallback-btn primary" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11 4"></path>
@@ -891,6 +890,10 @@
       window.location.href = "https://www.artbooms.com/";
     }
 
+    function getBrowserNotificationGranted() {
+      return ("Notification" in window) && Notification.permission === "granted";
+    }
+
     function setNotificationButtonActive(active) {
       const label = document.getElementById("notifyLabel");
       const button = document.getElementById("notifyButton");
@@ -906,6 +909,7 @@
 
       if (bell) {
         bell.setAttribute("stroke", "#000000");
+        bell.style.stroke = "#000000";
       }
 
       try {
@@ -920,31 +924,41 @@
         savedActive = localStorage.getItem(NOTIFICATION_STORAGE_KEY) === "1";
       } catch (err) {}
 
-      setNotificationButtonActive(savedActive);
+      const browserGranted = getBrowserNotificationGranted();
+
+      if (browserGranted) {
+        setNotificationButtonActive(true);
+      } else {
+        setNotificationButtonActive(savedActive);
+      }
 
       if (!window.OneSignalDeferred) return;
 
       OneSignalDeferred.push(function(OneSignal) {
-        let active = false;
+        let active = browserGranted;
 
         try {
           active = !!(
-            OneSignal.Notifications &&
-            OneSignal.Notifications.permission &&
-            OneSignal.User &&
-            OneSignal.User.PushSubscription &&
-            OneSignal.User.PushSubscription.optedIn
+            getBrowserNotificationGranted() ||
+            (
+              OneSignal.Notifications &&
+              OneSignal.Notifications.permission &&
+              OneSignal.User &&
+              OneSignal.User.PushSubscription &&
+              OneSignal.User.PushSubscription.optedIn
+            )
           );
-        } catch (err) {
-          active = savedActive;
-        }
+        } catch (err) {}
 
         setNotificationButtonActive(active);
       });
     }
 
     async function requestNotificationPermission() {
-      if (!window.OneSignalDeferred) return "unsupported";
+      if (!window.OneSignalDeferred) {
+        updateNotificationLabel();
+        return getBrowserNotificationGranted() ? "granted" : "unsupported";
+      }
 
       return new Promise((resolve) => {
         OneSignalDeferred.push(async function(OneSignal) {
@@ -954,17 +968,17 @@
               typeof OneSignal.Notifications.isPushSupported !== "function" ||
               !OneSignal.Notifications.isPushSupported()
             ) {
-              setNotificationButtonActive(false);
-              resolve("unsupported");
+              updateNotificationLabel();
+              resolve(getBrowserNotificationGranted() ? "granted" : "unsupported");
               return;
             }
 
             if (!OneSignal.Notifications.permission) {
-              await OneSignal.Notifications.requestPermission();
+              await OneSignal.Notifications.requestPermission({ fallbackToSettings: true });
             }
 
             if (
-              OneSignal.Notifications.permission &&
+              (OneSignal.Notifications.permission || getBrowserNotificationGranted()) &&
               OneSignal.User &&
               OneSignal.User.PushSubscription &&
               typeof OneSignal.User.PushSubscription.optIn === "function"
@@ -972,18 +986,25 @@
               await OneSignal.User.PushSubscription.optIn();
             }
 
+            setTimeout(updateNotificationLabel, 300);
+            setTimeout(updateNotificationLabel, 1200);
+
             const active = !!(
-              OneSignal.Notifications.permission &&
-              OneSignal.User &&
-              OneSignal.User.PushSubscription &&
-              OneSignal.User.PushSubscription.optedIn
+              getBrowserNotificationGranted() ||
+              (
+                OneSignal.Notifications.permission &&
+                OneSignal.User &&
+                OneSignal.User.PushSubscription &&
+                OneSignal.User.PushSubscription.optedIn
+              )
             );
 
             setNotificationButtonActive(active);
             resolve(active ? "granted" : "default");
           } catch (err) {
             console.error(err);
-            resolve("error");
+            updateNotificationLabel();
+            resolve(getBrowserNotificationGranted() ? "granted" : "error");
           }
         });
       });
@@ -1000,7 +1021,10 @@
             typeof OneSignal.User.PushSubscription.addEventListener === "function"
           ) {
             OneSignal.User.PushSubscription.addEventListener("change", function(event) {
-              const active = !!(event && event.current && event.current.optedIn);
+              const active = !!(
+                getBrowserNotificationGranted() ||
+                (event && event.current && event.current.optedIn)
+              );
               setNotificationButtonActive(active);
             });
           }
@@ -1011,15 +1035,20 @@
           ) {
             OneSignal.Notifications.addEventListener("permissionChange", function(permission) {
               const active = !!(
-                permission &&
-                OneSignal.User &&
-                OneSignal.User.PushSubscription &&
-                OneSignal.User.PushSubscription.optedIn
+                permission ||
+                getBrowserNotificationGranted() ||
+                (
+                  OneSignal.User &&
+                  OneSignal.User.PushSubscription &&
+                  OneSignal.User.PushSubscription.optedIn
+                )
               );
               setNotificationButtonActive(active);
             });
           }
         } catch (err) {}
+
+        updateNotificationLabel();
       });
     }
 
