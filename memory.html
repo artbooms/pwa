@@ -308,10 +308,11 @@
 
   <script>
     const MEMORY_JSON_URL = "https://artbooms.github.io/artbooms-pwa-memory/memory-data.json";
-    const STORAGE_KEY = "artbooms-offline-memory-v9";
+    const STORAGE_KEY = "artbooms-offline-memory-v10";
 
     let wasOnline = navigator.onLine;
     let offlinePopupTimer = null;
+    let shouldReturnToLandingOnNextClick = false;
 
     function showOfflinePopup() {
       const wrap = document.getElementById("offlinePopupWrap");
@@ -535,15 +536,28 @@
       wasOnline = isOnline;
     }
 
+    function returnToLandingOnNextClick(event) {
+      if (!shouldReturnToLandingOnNextClick) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      shouldReturnToLandingOnNextClick = false;
+      window.location.href = "/";
+    }
+
     window.addEventListener("online", () => {
       wasOnline = true;
-      window.location.href = "/";
+      shouldReturnToLandingOnNextClick = true;
     });
 
     window.addEventListener("offline", () => {
       wasOnline = false;
+      shouldReturnToLandingOnNextClick = false;
       showOfflinePopup();
     });
+
+    document.addEventListener("click", returnToLandingOnNextClick, true);
 
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden && !navigator.onLine) {
