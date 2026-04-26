@@ -827,7 +827,7 @@
   <section id="fallbackCard">
     <div class="fallback-card">
       <div class="fallback-header">
-        <span>Installazione non disponibile</span>
+        <span>Completa l'installazione</span>
         <span class="fallback-close" aria-hidden="true">×</span>
       </div>
 
@@ -843,7 +843,7 @@
       </div>
 
       <p class="fallback-text">
-        Il browser attuale non supporta l’installazione automatica. Apri questa pagina in <b>Chrome</b> o <b>Edge</b> per continuare.
+        Se Chrome o Edge non mostrano subito il pulsante automatico, usa il menu del browser: <b>tre puntini</b> → <b>Trasmetti, salva e condividi</b> → <b>Installa pagina come app</b>.
       </p>
 
       <div class="fallback-actions">
@@ -1287,7 +1287,7 @@
         } else if (!isStandaloneMode()) {
           showSection("fallbackCard");
         }
-      }, 900);
+      }, 2500);
     }
 
     window.addEventListener("beforeinstallprompt", (e) => {

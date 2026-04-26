@@ -39,3 +39,8 @@ iPhone: Share → Add to Home Screen (banner-like).
 Android: Chrome menu → Install app (auto banner may not show without root SW).
 
 Safety: the SW here does NOT cache; it only enables installability. Remove the header to disable.
+
+PATCH 2026-04-27:
+- aggiunto /icons/apple-touch-icon.png, richiesto da manifest e service worker;
+- aggiornato sw.js a artbooms-pwa-v9 per forzare refresh cache;
+- corretto il fallback desktop: Chrome/Edge non vengono più descritti come browser non supportati se il prompt automatico non è subito disponibile.
