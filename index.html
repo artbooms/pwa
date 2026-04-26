@@ -519,12 +519,17 @@
       justify-content: space-between;
       cursor: pointer;
       box-shadow: var(--soft-shadow);
-      transition: transform 0.14s ease, box-shadow 0.14s ease, opacity 0.14s ease;
+      transition:
+        transform 0.18s cubic-bezier(.2,.9,.25,1),
+        box-shadow 0.18s cubic-bezier(.2,.9,.25,1),
+        opacity 0.18s ease;
       font: inherit;
     }
 
     .pill-button:active {
-      transform: scale(0.988);
+      transform: translateY(4px) scale(0.972);
+      box-shadow: 0 3px 9px rgba(0, 0, 0, 0.16);
+      opacity: 0.92;
     }
 
     .pill-button.primary {
@@ -535,6 +540,13 @@
     .pill-button.secondary {
       background: #ffffff;
       color: #111111;
+    }
+
+    .pill-button.is-activating {
+      transform: translateY(2px) scale(0.985);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.13);
+      opacity: 0.88;
+      pointer-events: none;
     }
 
     .pill-left {
@@ -564,6 +576,41 @@
       width: 28px;
       height: 28px;
       flex-shrink: 0;
+      display: block;
+      stroke: #8a8a8a;
+      fill: none;
+      transition:
+        stroke 0.18s ease,
+        fill 0.18s ease,
+        transform 0.18s cubic-bezier(.2,.9,.25,1);
+    }
+
+    #notifyButton.notifications-active .bell-icon {
+      stroke: #000000;
+      fill: #000000;
+      transform: scale(1.06);
+    }
+
+    #notifyButton.notifications-active .bell-icon .bell-line {
+      stroke: #000000;
+    }
+
+    #notifyButton.notifications-active .bell-icon .bell-fill {
+      fill: #000000;
+      stroke: #000000;
+    }
+
+    .notification-message {
+      display: none;
+      width: min(100%, 540px);
+      margin: 12px auto 0;
+      color: #6e7b88;
+      font-size: 0.92rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .notification-message.show {
       display: block;
     }
 
@@ -596,6 +643,10 @@
 
       .pill-left {
         gap: 16px;
+      }
+
+      .notification-message {
+        width: min(100%, 570px);
       }
     }
 
@@ -774,8 +825,7 @@
       </div>
     </div>
   </section>
-
-  <section id="fallbackCard">
+    <section id="fallbackCard">
     <div class="fallback-card">
       <div class="fallback-header">
         <span>Installazione non disponibile</span>
@@ -796,7 +846,8 @@
       <p class="fallback-text">
         Il browser attuale non supporta l’installazione automatica. Apri questa pagina in <b>Chrome</b> o <b>Edge</b> per continuare.
       </p>
-            <div class="fallback-actions">
+
+      <div class="fallback-actions">
         <button id="copyLinkButton" class="fallback-btn primary" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11 4"></path>
@@ -838,15 +889,17 @@
 
           <button id="notifyButton" class="pill-button secondary" type="button" aria-live="polite" aria-pressed="false">
             <span class="pill-left">
-              <svg id="notifyBellIcon" class="bell-icon" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M15 18H9"></path>
-                <path d="M18 16v-5a6 6 0 1 0-12 0v5l-2 2h16l-2-2Z"></path>
-                <path d="M10.5 20a1.5 1.5 0 0 0 3 0"></path>
+              <svg id="notifyBellIcon" class="bell-icon" viewBox="0 0 24 24" fill="none" stroke="#8a8a8a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path class="bell-line" d="M15 18H9"></path>
+                <path class="bell-fill" d="M18 16v-5a6 6 0 1 0-12 0v5l-2 2h16l-2-2Z"></path>
+                <path class="bell-line" d="M10.5 20a1.5 1.5 0 0 0 3 0"></path>
               </svg>
               <span id="notifyLabel" class="pill-label">Attiva notifiche</span>
             </span>
           </button>
         </div>
+
+        <p id="notificationMessage" class="notification-message" role="status" aria-live="polite"></p>
 
         <div class="bottom-space"></div>
       </div>
@@ -894,10 +947,23 @@
       return ("Notification" in window) && Notification.permission === "granted";
     }
 
+    function setNotificationMessage(message) {
+      const box = document.getElementById("notificationMessage");
+      if (!box) return;
+
+      if (!message) {
+        box.textContent = "";
+        box.classList.remove("show");
+        return;
+      }
+
+      box.textContent = message;
+      box.classList.add("show");
+    }
+
     function setNotificationButtonActive(active) {
       const label = document.getElementById("notifyLabel");
       const button = document.getElementById("notifyButton");
-      const bell = document.getElementById("notifyBellIcon");
 
       if (label) {
         label.textContent = active ? "Notifiche attivate" : "Attiva notifiche";
@@ -905,16 +971,30 @@
 
       if (button) {
         button.setAttribute("aria-pressed", active ? "true" : "false");
+        button.classList.toggle("notifications-active", !!active);
+        button.classList.remove("is-activating");
       }
 
-      if (bell) {
-        bell.setAttribute("stroke", "#000000");
-        bell.style.stroke = "#000000";
+      if (active) {
+        setNotificationMessage("");
       }
 
       try {
         localStorage.setItem(NOTIFICATION_STORAGE_KEY, active ? "1" : "0");
       } catch (err) {}
+    }
+
+    function setNotificationButtonActivating(active) {
+      const button = document.getElementById("notifyButton");
+      const label = document.getElementById("notifyLabel");
+
+      if (button) {
+        button.classList.toggle("is-activating", !!active);
+      }
+
+      if (label && active) {
+        label.textContent = "Attivazione...";
+      }
     }
 
     function updateNotificationLabel() {
@@ -955,8 +1035,13 @@
     }
 
     async function requestNotificationPermission() {
+      setNotificationMessage("");
+      setNotificationButtonActivating(true);
+
       if (!window.OneSignalDeferred) {
+        setNotificationButtonActivating(false);
         updateNotificationLabel();
+        setNotificationMessage("Le notifiche non sono disponibili in questa modalità del browser. Apri la pagina in una finestra normale e consenti le notifiche.");
         return getBrowserNotificationGranted() ? "granted" : "unsupported";
       }
 
@@ -968,7 +1053,9 @@
               typeof OneSignal.Notifications.isPushSupported !== "function" ||
               !OneSignal.Notifications.isPushSupported()
             ) {
+              setNotificationButtonActivating(false);
               updateNotificationLabel();
+              setNotificationMessage("Le notifiche non sono supportate da questo browser o da questa modalità di navigazione.");
               resolve(getBrowserNotificationGranted() ? "granted" : "unsupported");
               return;
             }
@@ -999,11 +1086,23 @@
               )
             );
 
+            setNotificationButtonActivating(false);
             setNotificationButtonActive(active);
+
+            if (!active) {
+              setNotificationMessage("Non è stato possibile attivare le notifiche. Controlla che il browser non le abbia bloccate e riprova da una finestra normale.");
+            }
+
             resolve(active ? "granted" : "default");
           } catch (err) {
             console.error(err);
+            setNotificationButtonActivating(false);
             updateNotificationLabel();
+
+            if (!getBrowserNotificationGranted()) {
+              setNotificationMessage("Il browser ha bloccato o non ha completato l’attivazione delle notifiche. Controlla le impostazioni del sito e riprova.");
+            }
+
             resolve(getBrowserNotificationGranted() ? "granted" : "error");
           }
         });
