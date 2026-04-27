@@ -52,3 +52,9 @@ Patch desktop redirect/icon 2026-04-27:
 - restano invariati i flussi mobile/iPhone e il pulsante notifiche;
 - icone PNG rigenerate con angoli smussati e aggiunte icone maskable;
 - cache service worker aggiornata a artbooms-pwa-v10.
+
+AUDIT REFINEMENT 2026-04-27
+- Mantiene la PWA esistente e la sezione memory separata.
+- robots.txt ora permette il crawling tecnico; index.html resta noindex,follow con canonical verso www.artbooms.com.
+- Aggiunti link HTML vero, aria-label, schema WebApplication leggero e preload immagine principale.
+- Service worker aggiornato a artbooms-pwa-v11.

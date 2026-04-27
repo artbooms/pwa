@@ -1,10 +1,8 @@
 # robots.txt per ARTBOOMS PWA
-# Impedisce l'indicizzazione della PWA su Render,
-# ma consente a Google e Chrome di leggere manifest e icone.
-# La sitemap principale resta quella del sito ufficiale.
+# Consente il crawling della landing/manifest, mentre l'HTML resta noindex,follow.
+# Così Google può leggere canonical e relazione con il sito principale senza indicizzare app.artbooms.com.
 
 User-agent: *
-Disallow: /
-Allow: /manifest.json
-Allow: /icons/
+Allow: /
+
 Sitemap: https://www.artbooms.com/sitemap.xml

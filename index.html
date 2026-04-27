@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
   <meta name="robots" content="noindex,follow">
-  <title>ARTBOOMS</title>
+  <title>ARTBOOMS – App ufficiale</title>
 
-  <meta name="description" content="ARTBOOMS, magazine online d'arte contemporanea.">
+  <meta name="description" content="App ufficiale ARTBOOMS: accesso rapido al magazine di arte contemporanea, notifiche e memoria offline essenziale.">
   <link rel="canonical" href="https://www.artbooms.com/">
 
   <link rel="manifest" href="/manifest.json">
@@ -17,6 +17,26 @@
 
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+  <link rel="preload" as="image" href="/icons/icon-512.png" fetchpriority="high">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ARTBOOMS",
+    "applicationCategory": "NewsApplication",
+    "operatingSystem": "Web",
+    "url": "https://app.artbooms.com/",
+    "inLanguage": "it-IT",
+    "isAccessibleForFree": true,
+    "publisher": {
+      "@type": "NewsMediaOrganization",
+      "name": "ARTBOOMS",
+      "url": "https://www.artbooms.com/"
+    },
+    "sameAs": "https://www.artbooms.com/"
+  }
+  </script>
 
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
@@ -688,6 +708,18 @@
         min-height: 120px;
       }
     }
+    .official-site-link {
+      margin: 14px 0 0;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .official-site-link a {
+      color: var(--muted);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
   </style>
 </head>
   <body>
@@ -847,7 +879,7 @@
       </p>
 
       <div class="fallback-actions">
-        <button id="copyLinkButton" class="fallback-btn primary" type="button">
+        <button id="copyLinkButton" class="fallback-btn primary" type="button" aria-label="Copia il link dell’app ARTBOOMS">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11 4"></path>
             <path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 1 0 7.07 7.07L13 20"></path>
@@ -855,7 +887,7 @@
           Copia link
         </button>
 
-        <button id="openSiteButton" class="fallback-btn secondary" type="button">
+        <button id="openSiteButton" class="fallback-btn secondary" type="button" aria-label="Apri il sito ARTBOOMS">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M14 3h7v7"></path>
             <path d="M10 14 21 3"></path>
@@ -873,20 +905,20 @@
         <div class="top-space"></div>
 
         <div class="icon-wrap" aria-hidden="true">
-          <img src="/icons/icon-512.png" alt="">
+          <img src="/icons/icon-512.png" alt="" width="512" height="512" loading="eager" decoding="async" fetchpriority="high">
         </div>
 
         <h1 class="app-title">ARTBOOMS</h1>
 
         <div class="buttons">
-          <button id="launchButton" class="pill-button primary" type="button">
+          <button id="launchButton" class="pill-button primary" type="button" aria-label="Scarica o avvia l’app ARTBOOMS">
             <span class="pill-left">
               <span class="pill-label">avviare l'app</span>
             </span>
             <span class="pill-arrow" aria-hidden="true">›</span>
           </button>
 
-          <button id="notifyButton" class="pill-button secondary" type="button" aria-live="polite" aria-pressed="false">
+          <button id="notifyButton" class="pill-button secondary" type="button" aria-label="Attiva le notifiche di ARTBOOMS" aria-pressed="false">
             <span class="pill-left">
               <svg id="notifyBellIcon" class="bell-icon" viewBox="0 0 24 24" fill="none" stroke="#8a8a8a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path class="bell-line" d="M15 18H9"></path>
@@ -899,6 +931,8 @@
         </div>
 
         <p id="notificationMessage" class="notification-message" role="status" aria-live="polite"></p>
+
+        <p class="official-site-link"><a href="https://www.artbooms.com/" rel="noopener">Vai al sito ufficiale ARTBOOMS</a></p>
 
         <div class="bottom-space"></div>
       </div>

@@ -43,5 +43,43 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "categories": [
+    "news",
+    "magazines",
+    "art",
+    "entertainment"
+  ],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "shortcuts": [
+    {
+      "name": "Apri ARTBOOMS",
+      "short_name": "Sito",
+      "description": "Apri il sito ufficiale ARTBOOMS.",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Memoria offline",
+      "short_name": "Memoria",
+      "description": "Apri la memoria offline essenziale di ARTBOOMS.",
+      "url": "/memory.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }
