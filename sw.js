@@ -1,4 +1,4 @@
-const CACHE_NAME = "artbooms-pwa-v9";
+const CACHE_NAME = "artbooms-pwa-v10";
 const APP_SHELL = [
   "/",
   "/memory.html",
@@ -7,6 +7,8 @@ const APP_SHELL = [
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/icons/apple-touch-icon.png",
+  "/icons/icon-maskable-192.png",
+  "/icons/icon-maskable-512.png",
   "/images/artbooms-logo.webp"
 ];
 

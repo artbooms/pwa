@@ -44,3 +44,11 @@ PATCH 2026-04-27:
 - aggiunto /icons/apple-touch-icon.png, richiesto da manifest e service worker;
 - aggiornato sw.js a artbooms-pwa-v9 per forzare refresh cache;
 - corretto il fallback desktop: Chrome/Edge non vengono più descritti come browser non supportati se il prompt automatico non è subito disponibile.
+
+
+Patch desktop redirect/icon 2026-04-27:
+- base: cartella caricata dall’utente pwa-main-patched-install-fix-2026-04-27 (1).zip;
+- su desktop, quando la PWA è installata o appena installata, la landing reindirizza alla home https://www.artbooms.com/;
+- restano invariati i flussi mobile/iPhone e il pulsante notifiche;
+- icone PNG rigenerate con angoli smussati e aggiunte icone maskable;
+- cache service worker aggiornata a artbooms-pwa-v10.

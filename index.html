@@ -928,6 +928,14 @@
       return /iphone|ipad|ipod/i.test(ua) || (platform === "MacIntel" && touch > 1);
     }
 
+    function isAndroidMobile() {
+      return /android/i.test(navigator.userAgent || "");
+    }
+
+    function shouldRedirectStandaloneToMainSite() {
+      return isStandaloneMode() && !isAppleMobile() && !isAndroidMobile();
+    }
+
     function isMacSafari() {
       const ua = navigator.userAgent || "";
       const isMac = /macintosh|mac os x/i.test(ua);
@@ -1266,6 +1274,11 @@
       if (deferredPrompt) {
         const accepted = await tryAutoInstall();
 
+        if (accepted) {
+          setTimeout(goToMainSite, 500);
+          return;
+        }
+
         if (!accepted && !isStandaloneMode()) {
           showSection("fallbackCard");
         }
@@ -1280,6 +1293,11 @@
       installFallbackTimer = setTimeout(async () => {
         if (deferredPrompt) {
           const accepted = await tryAutoInstall();
+
+          if (accepted) {
+            setTimeout(goToMainSite, 500);
+            return;
+          }
 
           if (!accepted && !isStandaloneMode()) {
             showSection("fallbackCard");
@@ -1301,7 +1319,7 @@
       installAttemptFinished = true;
       history.replaceState({}, "", "/");
       updateInstallLabel();
-      showSection("mainLauncher");
+      setTimeout(goToMainSite, 500);
     });
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -1312,6 +1330,11 @@
       const installed = isStandaloneMode();
       const appleMobile = isAppleMobile();
       const macSafari = isMacSafari();
+
+      if (shouldRedirectStandaloneToMainSite()) {
+        goToMainSite();
+        return;
+      }
 
       const launchButton = document.getElementById("launchButton");
       const notifyButton = document.getElementById("notifyButton");
