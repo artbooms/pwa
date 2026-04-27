@@ -967,7 +967,7 @@
     }
 
     function shouldRedirectStandaloneToMainSite() {
-      return isStandaloneMode() && !isAppleMobile() && !isAndroidMobile();
+      return false;
     }
 
     function isMacSafari() {
@@ -1270,7 +1270,7 @@
     function updateInstallLabel() {
       const label = document.querySelector("#launchButton .pill-label");
       if (!label) return;
-      label.textContent = isStandaloneMode() ? "avviare l'app" : "scarica l'app";
+      label.textContent = isStandaloneMode() ? "apri ARTBOOMS" : "scarica l'app";
     }
 
     async function tryAutoInstall() {
@@ -1309,7 +1309,8 @@
         const accepted = await tryAutoInstall();
 
         if (accepted) {
-          setTimeout(goToMainSite, 500);
+          setNotificationMessage("App installata. Puoi attivare le notifiche da qui oppure aprire il sito ARTBOOMS.");
+          showSection("mainLauncher");
           return;
         }
 
@@ -1329,7 +1330,8 @@
           const accepted = await tryAutoInstall();
 
           if (accepted) {
-            setTimeout(goToMainSite, 500);
+            setNotificationMessage("App installata. Puoi attivare le notifiche da qui oppure aprire il sito ARTBOOMS.");
+          showSection("mainLauncher");
             return;
           }
 
@@ -1353,7 +1355,8 @@
       installAttemptFinished = true;
       history.replaceState({}, "", "/");
       updateInstallLabel();
-      setTimeout(goToMainSite, 500);
+      setNotificationMessage("App installata. Puoi attivare le notifiche da qui oppure aprire il sito ARTBOOMS.");
+          showSection("mainLauncher");
     });
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -1364,11 +1367,6 @@
       const installed = isStandaloneMode();
       const appleMobile = isAppleMobile();
       const macSafari = isMacSafari();
-
-      if (shouldRedirectStandaloneToMainSite()) {
-        goToMainSite();
-        return;
-      }
 
       const launchButton = document.getElementById("launchButton");
       const notifyButton = document.getElementById("notifyButton");

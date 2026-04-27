@@ -58,3 +58,9 @@ AUDIT REFINEMENT 2026-04-27
 - robots.txt ora permette il crawling tecnico; index.html resta noindex,follow con canonical verso www.artbooms.com.
 - Aggiunti link HTML vero, aria-label, schema WebApplication leggero e preload immagine principale.
 - Service worker aggiornato a artbooms-pwa-v11.
+
+Patch 2026-04-27 desktop notifiche:
+- la PWA desktop installata resta sulla landing invece di reindirizzare subito alla home;
+- l’utente può attivare le notifiche dalla landing anche dopo l’installazione;
+- il bottone principale, quando la PWA è aperta/installata, apre ARTBOOMS;
+- service worker aggiornato a artbooms-pwa-v12.
