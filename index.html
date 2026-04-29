@@ -17,7 +17,7 @@
 
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-  <link rel="preload" as="image" href="/icons/icon-512.png" fetchpriority="high">
+  <link rel="preload" as="image" href="/icons/icon-192.png" fetchpriority="high">
 
   <script type="application/ld+json">
   {
@@ -905,7 +905,7 @@
         <div class="top-space"></div>
 
         <div class="icon-wrap" aria-hidden="true">
-          <img src="/icons/icon-512.png" alt="" width="512" height="512" loading="eager" decoding="async" fetchpriority="high">
+          <img src="/icons/icon-192.png" alt="" width="192" height="192" loading="eager" decoding="async" fetchpriority="high">
         </div>
 
         <h1 class="app-title">ARTBOOMS</h1>
@@ -945,6 +945,7 @@
     }
 
     const NOTIFICATION_STORAGE_KEY = "artbooms-notifications-active";
+    const APP_INSTALLED_STORAGE_KEY = "artbooms-app-installed";
 
     let deferredPrompt = null;
     let installAttemptFinished = false;
@@ -953,6 +954,22 @@
 
     function isStandaloneMode() {
       return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    }
+
+    function rememberAppInstalled() {
+      try {
+        localStorage.setItem(APP_INSTALLED_STORAGE_KEY, "1");
+      } catch (err) {}
+    }
+
+    function isAppInstalledOrStandalone() {
+      if (isStandaloneMode()) return true;
+
+      try {
+        return localStorage.getItem(APP_INSTALLED_STORAGE_KEY) === "1";
+      } catch (err) {
+        return false;
+      }
     }
 
     function isAppleMobile() {
@@ -1270,7 +1287,7 @@
     function updateInstallLabel() {
       const label = document.querySelector("#launchButton .pill-label");
       if (!label) return;
-      label.textContent = isStandaloneMode() ? "apri ARTBOOMS" : "scarica l'app";
+      label.textContent = isAppInstalledOrStandalone() ? "APRI L'APP DI ARTBOOMS" : "scarica l'app";
     }
 
     async function tryAutoInstall() {
@@ -1290,7 +1307,7 @@
     }
 
     async function handleInstallOrLaunch() {
-      if (isStandaloneMode()) {
+      if (isAppInstalledOrStandalone()) {
         goToMainSite();
         return;
       }
@@ -1353,6 +1370,7 @@
     window.addEventListener("appinstalled", () => {
       deferredPrompt = null;
       installAttemptFinished = true;
+      rememberAppInstalled();
       history.replaceState({}, "", "/");
       updateInstallLabel();
       setNotificationMessage("App installata. Puoi attivare le notifiche da qui oppure aprire il sito ARTBOOMS.");
@@ -1364,7 +1382,7 @@
       const installRequested = params.get("install") === "1";
       const appleInstallRequested = params.get("apple-install") === "1";
 
-      const installed = isStandaloneMode();
+      const installed = isAppInstalledOrStandalone();
       const appleMobile = isAppleMobile();
       const macSafari = isMacSafari();
 
