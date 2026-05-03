@@ -913,7 +913,7 @@
         <div class="buttons">
           <button id="launchButton" class="pill-button primary" type="button" aria-label="Scarica o avvia l’app ARTBOOMS">
             <span class="pill-left">
-              <span class="pill-label">avviare l'app</span>
+              <span class="pill-label">INSTALLA L'APP DI ARTBOOMS</span>
             </span>
             <span class="pill-arrow" aria-hidden="true">›</span>
           </button>
@@ -1270,7 +1270,7 @@
     function updateInstallLabel() {
       const label = document.querySelector("#launchButton .pill-label");
       if (!label) return;
-      label.textContent = isStandaloneMode() ? "APRI L'APP DI ARTBOOMS" : "scarica l'app";
+      label.textContent = isStandaloneMode() ? "APRI L'APP DI ARTBOOMS" : "INSTALLA L'APP DI ARTBOOMS";
     }
 
     async function tryAutoInstall() {
@@ -1383,6 +1383,16 @@
       }
 
       if (!installed && appleInstallRequested && macSafari) {
+        showSection("macGuide");
+        return;
+      }
+
+      if (!installed && appleMobile) {
+        showSection("appleGuide");
+        return;
+      }
+
+      if (!installed && macSafari) {
         showSection("macGuide");
         return;
       }
