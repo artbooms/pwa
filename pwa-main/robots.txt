@@ -1,0 +1,8 @@
+# robots.txt per ARTBOOMS PWA
+# Consente il crawling della landing/manifest, mentre l'HTML resta noindex,follow.
+# Così Google può leggere canonical e relazione con il sito principale senza indicizzare app.artbooms.com.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://www.artbooms.com/sitemap.xml
