@@ -1,0 +1,85 @@
+{
+  "id": "/",
+  "name": "ARTBOOMS",
+  "short_name": "ARTBOOMS",
+  "description": "ARTBOOMS è un magazine online d'arte contemporanea: notizie, mostre, artisti e approfondimenti.",
+  "lang": "it",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f3f3",
+  "theme_color": "#000000",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": [
+    "news",
+    "magazines",
+    "art",
+    "entertainment"
+  ],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "shortcuts": [
+    {
+      "name": "Apri ARTBOOMS",
+      "short_name": "Sito",
+      "description": "Apri il sito ufficiale ARTBOOMS.",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Memoria offline",
+      "short_name": "Memoria",
+      "description": "Apri la memoria offline essenziale di ARTBOOMS.",
+      "url": "/memory.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
